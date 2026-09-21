@@ -377,18 +377,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         }
 
-        async function fetchGeminiTTS(text, voiceName) {
-            const response = await fetch('/api/tts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, voiceName })
-            });
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || 'Server TTS proxy failed');
-            }
-            const resultData = await response.json();
-
+        function parseAudioFromResponse(resultData) {
             const part = resultData?.candidates?.[0]?.content?.parts?.[0];
             const audioData = part?.inlineData?.data;
             const mimeType = part?.inlineData?.mimeType;
@@ -407,6 +396,66 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const wavBlob = pcmToWav(pcm16, sampleRate);
                 return URL.createObjectURL(wavBlob);
             }
+            return null;
+        }
+
+        async function fetchGeminiTTS(text, voiceName) {
+            // 1. Try server proxy first (/api/tts)
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceName })
+                });
+                if (response.ok) {
+                    const resultData = await response.json();
+                    const audioUrl = parseAudioFromResponse(resultData);
+                    if (audioUrl) return audioUrl;
+                }
+            } catch (e) {
+                console.warn("Server TTS proxy not available (static host / GitHub Pages), trying client-side API key...");
+            }
+
+            // 2. If server proxy failed (e.g. on GitHub Pages static host), check/prompt for API key
+            let apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                apiKey = prompt("Masukkan Gemini API Key Anda untuk mengaktifkan Suara AI (Gemini TTS) di GitHub Pages / Static Hosting:");
+                if (apiKey) {
+                    localStorage.setItem('gemini_api_key', apiKey.trim());
+                } else {
+                    throw new Error("Gemini API Key diperlukan untuk suara AI di GitHub Pages.");
+                }
+            }
+
+            // 3. Call Gemini API directly from client using the key
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voiceName || "Sulafat" }
+                        }
+                    }
+                }
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${apiKey}`;
+            const clientResponse = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!clientResponse.ok) {
+                const errText = await clientResponse.text();
+                throw new Error("Client Gemini TTS failed: " + errText);
+            }
+
+            const resultData = await clientResponse.json();
+            const audioUrl = parseAudioFromResponse(resultData);
+            if (audioUrl) return audioUrl;
+
             throw new Error('Format audio tidak valid dari respons API');
         }
 
