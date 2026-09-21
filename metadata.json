@@ -1,0 +1,8 @@
+{
+  "name": "Announcer Stasiun Ketapang",
+  "description": "Sistem Pengumuman Terpadu Stasiun Ketapang dengan Bel Ding Dong dan Gemini TTS",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
