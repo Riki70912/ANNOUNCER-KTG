@@ -277,6 +277,33 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         });
 
         const voiceSelect = document.getElementById('voiceSelect');
+        const savedVoice = localStorage.getItem('selected_voice_name');
+        if (savedVoice) {
+            voiceSelect.value = savedVoice;
+        }
+        voiceSelect.addEventListener('change', (e) => {
+            localStorage.setItem('selected_voice_name', e.target.value);
+        });
+
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const storedKey = localStorage.getItem('gemini_api_key');
+        if (storedKey && apiKeyInput) {
+            apiKeyInput.value = storedKey;
+        }
+        if (saveApiKeyBtn && apiKeyInput) {
+            saveApiKeyBtn.addEventListener('click', () => {
+                const key = apiKeyInput.value.trim();
+                if (key) {
+                    localStorage.setItem('gemini_api_key', key);
+                    alert('Gemini API Key berhasil disimpan! Suara AI Gemini sekarang aktif konsisten di semua browser.');
+                } else {
+                    localStorage.removeItem('gemini_api_key');
+                    alert('Gemini API Key dihapus.');
+                }
+            });
+        }
+
         const tempSlider = document.getElementById('ttsTemp');
         const tempDisplay = document.getElementById('tempDisplay');
         const generateTtsBtn = document.getElementById('generateTtsBtn');
