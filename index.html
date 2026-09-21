@@ -74,6 +74,12 @@
                     <p class="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">Sistem Pengumuman Terpadu</p>
                 </div>
             </div>
+            <div>
+                <button id="apiKeyBtn" class="btn-press bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,48H32a8,8,0,0,0-8,8V192a8,8,0,0,0,8,8H224a8,8,0,0,0,8-8V56A8,8,0,0,0,224,48Zm-8,136H40V64H216ZM112,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Z"></path></svg>
+                    API Key (GitHub Pages)
+                </button>
+            </div>
         </div>
     </header>
 
@@ -144,11 +150,17 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     </div>
 
                     <div class="flex flex-col gap-2 mt-2">
-                        <button id="generateTtsBtn" class="btn-press w-full py-3.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl font-bold shadow-lg shadow-orange-900/30 flex items-center justify-center gap-2">
-                            <svg id="ttsIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69ZM72,216l144-96L72,40Z"></path></svg>
-                            <div id="ttsLoading" class="spinner hidden"></div>
-                            <span id="ttsBtnText">Play TTS (dengan Bel)</span>
-                        </button>
+                        <div class="flex gap-2">
+                            <button id="generateTtsBtn" class="btn-press flex-grow py-3.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl font-bold shadow-lg shadow-orange-900/30 flex items-center justify-center gap-2">
+                                <svg id="ttsIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69ZM72,216l144-96L72,40Z"></path></svg>
+                                <div id="ttsLoading" class="spinner hidden"></div>
+                                <span id="ttsBtnText">Play TTS (dengan Bel)</span>
+                            </button>
+                            <button id="pauseTtsBtn" class="hidden btn-press px-4 py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-1.5 text-sm shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM112,176a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Zm48,0a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Z"></path></svg>
+                                Hentikan
+                            </button>
+                        </div>
                         
                         <a id="downloadTtsBtn" class="hidden btn-press w-full py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2" download="Pengumuman_TTS.wav">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
@@ -186,7 +198,58 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         </div>
     </main>
 
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-slate-100">Konfigurasi Gemini API Key</h3>
+            <p class="text-xs text-slate-400">
+                Untuk penggunaan di GitHub Pages (hosting statis tanpa server backend), masukkan Google Gemini API Key Anda. Kunci ini disimpan secara aman di browser Anda (localStorage).
+            </p>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Gemini API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full input-field rounded-lg px-3 py-2 text-sm text-slate-200">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button id="closeApiKeyModal" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors">
+                    Batal
+                </button>
+                <button id="saveApiKeyBtn" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-sm font-bold transition-colors">
+                    Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // --- API Key Modal Controls ---
+        const apiKeyBtn = document.getElementById('apiKeyBtn');
+        const apiKeyModal = document.getElementById('apiKeyModal');
+        const closeApiKeyModal = document.getElementById('closeApiKeyModal');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+
+        apiKeyBtn.addEventListener('click', () => {
+            apiKeyInput.value = localStorage.getItem('gemini_api_key') || '';
+            apiKeyModal.classList.remove('hidden');
+        });
+
+        closeApiKeyModal.addEventListener('click', () => {
+            apiKeyModal.classList.add('hidden');
+        });
+
+        saveApiKeyBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert('API Key berhasil disimpan!');
+            } else {
+                localStorage.removeItem('gemini_api_key');
+                alert('API Key dihapus.');
+            }
+            apiKeyModal.classList.add('hidden');
+        });
+
+        // --- Audio Context & Web Audio API (Ding Dong) ---
         let audioCtx;
         
         function initAudio() {
@@ -253,6 +316,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         const tempSlider = document.getElementById('ttsTemp');
         const tempDisplay = document.getElementById('tempDisplay');
         const generateTtsBtn = document.getElementById('generateTtsBtn');
+        const pauseTtsBtn = document.getElementById('pauseTtsBtn');
         const ttsText = document.getElementById('ttsText');
         const singleSpeakerCheck = document.getElementById('singleSpeaker');
         const downloadTtsBtn = document.getElementById('downloadTtsBtn');
@@ -302,16 +366,56 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         }
 
         async function fetchGeminiTTS(text, voiceName) {
-            const response = await fetch('/api/tts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, voiceName })
-            });
-            
-            if (!response.ok) throw new Error('TTS API Failed');
-            
-            const result = await response.json();
-            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            let resultData;
+            try {
+                // Try server proxy first (AI Studio / Node backend)
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, voiceName })
+                });
+                if (response.ok) {
+                    resultData = await response.json();
+                } else {
+                    throw new Error('Server proxy not available');
+                }
+            } catch (err) {
+                // Fallback for GitHub Pages / static hosting
+                let apiKey = localStorage.getItem('gemini_api_key');
+                if (!apiKey) {
+                    apiKey = prompt("Masukkan Google Gemini API Key Anda untuk digunakan di GitHub Pages:");
+                    if (apiKey) {
+                        localStorage.setItem('gemini_api_key', apiKey.trim());
+                    } else {
+                        throw new Error('Gemini API Key diperlukan untuk menggunakan TTS di GitHub Pages.');
+                    }
+                }
+
+                const payload = {
+                    contents: [{ parts: [{ text: text }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const directResp = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!directResp.ok) throw new Error('Direct Gemini TTS API Failed');
+                resultData = await directResp.json();
+            }
+
+            const part = resultData?.candidates?.[0]?.content?.parts?.[0];
             const audioData = part?.inlineData?.data;
             const mimeType = part?.inlineData?.mimeType;
 
@@ -332,6 +436,35 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             throw new Error('Invalid audio data from API');
         }
 
+        let isTtsPlaying = false;
+
+        pauseTtsBtn.addEventListener('click', () => {
+            if (currentPlayingAudio) {
+                currentPlayingAudio.pause();
+                currentPlayingAudio.currentTime = 0;
+                currentPlayingAudio = null;
+            }
+            resetTtsPlayState();
+        });
+
+        function resetTtsPlayState() {
+            isTtsPlaying = false;
+            generateTtsBtn.disabled = false;
+            generateTtsBtn.classList.remove('opacity-50');
+            document.getElementById('ttsIcon').classList.remove('hidden');
+            document.getElementById('ttsLoading').classList.add('hidden');
+            document.getElementById('ttsBtnText').textContent = 'Play TTS (dengan Bel)';
+            pauseTtsBtn.classList.add('hidden');
+            // Also reset train buttons
+            document.querySelectorAll('.play-audio-btn').forEach(b => {
+                b.dataset.isPlaying = 'false';
+                const t = b.querySelector('.play-text');
+                if (t) t.textContent = 'Play';
+                b.classList.remove('bg-red-600', 'hover:bg-red-500');
+                b.classList.add('bg-blue-600', 'hover:bg-blue-500');
+            });
+        }
+
         generateTtsBtn.addEventListener('click', async () => {
             const text = ttsText.value.trim();
             if (!text) return;
@@ -341,17 +474,21 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 currentPlayingAudio.currentTime = 0;
             }
 
+            isTtsPlaying = true;
             generateTtsBtn.disabled = true;
             generateTtsBtn.classList.add('opacity-50');
             downloadTtsBtn.classList.add('hidden');
             document.getElementById('ttsIcon').classList.add('hidden');
             document.getElementById('ttsLoading').classList.remove('hidden');
             document.getElementById('ttsBtnText').textContent = 'Memproses Suara AI...';
+            pauseTtsBtn.classList.remove('hidden');
 
             try {
                 const voice = voiceSelect.value;
                 const audioUrl = await fetchGeminiTTS(text, voice);
                 
+                if (!isTtsPlaying) return; // Cancelled during fetch
+
                 downloadTtsBtn.href = audioUrl;
                 downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`;
                 downloadTtsBtn.classList.remove('hidden');
@@ -363,7 +500,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const speed = parseFloat(speedSlider.value);
                 await playDingDong(speed);
 
-                document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman...';
+                if (!isTtsPlaying) return; // Cancelled during chime
+
+                document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
                 
                 const audio = new Audio(audioUrl);
                 audio.playbackRate = parseFloat(tempSlider.value); 
@@ -377,13 +516,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
             } catch (error) {
                 console.error(error);
-                alert("Terjadi kesalahan saat memproses suara. Pastikan koneksi internet stabil.");
+                alert("Terjadi kesalahan saat memproses suara: " + error.message);
             } finally {
-                generateTtsBtn.disabled = false;
-                generateTtsBtn.classList.remove('opacity-50');
-                document.getElementById('ttsIcon').classList.remove('hidden');
-                document.getElementById('ttsLoading').classList.add('hidden');
-                document.getElementById('ttsBtnText').textContent = 'Play TTS (dengan Bel)';
+                resetTtsPlayState();
                 currentPlayingAudio = null;
             }
         });
@@ -440,34 +575,61 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 if (ann) {
                     const btnText = target.querySelector('.play-text');
                     
-                    target.disabled = true;
-                    target.classList.add('opacity-75');
-                    
-                    if(singleSpeakerCheck.checked && currentPlayingAudio) {
+                    // If already playing this file, pause/stop it
+                    if (currentPlayingAudio && target.dataset.isPlaying === 'true') {
                         currentPlayingAudio.pause();
                         currentPlayingAudio.currentTime = 0;
+                        currentPlayingAudio = null;
+                        target.dataset.isPlaying = 'false';
+                        btnText.textContent = 'Play';
+                        target.classList.remove('bg-red-600', 'hover:bg-red-500');
+                        target.classList.add('bg-blue-600', 'hover:bg-blue-500');
+                        pauseTtsBtn.classList.add('hidden');
+                        return;
                     }
 
+                    // Stop any active audio
+                    if (currentPlayingAudio) {
+                        currentPlayingAudio.pause();
+                        currentPlayingAudio.currentTime = 0;
+                        currentPlayingAudio = null;
+                    }
+                    resetTtsPlayState();
+
+                    target.disabled = true;
                     btnText.textContent = 'Bel...';
+                    pauseTtsBtn.classList.remove('hidden');
                     await playDingDong(parseFloat(speedSlider.value));
 
                     btnText.textContent = 'Memutar...';
                     const audio = new Audio(ann.fileUrl);
                     currentPlayingAudio = audio;
+                    target.disabled = false;
+                    target.dataset.isPlaying = 'true';
+                    btnText.textContent = 'Pause';
+                    target.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+                    target.classList.add('bg-red-600', 'hover:bg-red-500');
+
                     audio.play();
 
                     audio.onended = () => {
+                        target.dataset.isPlaying = 'false';
                         btnText.textContent = 'Play';
-                        target.disabled = false;
-                        target.classList.remove('opacity-75');
+                        target.classList.remove('bg-red-600', 'hover:bg-red-500');
+                        target.classList.add('bg-blue-600', 'hover:bg-blue-500');
+                        if (currentPlayingAudio === audio) currentPlayingAudio = null;
+                        pauseTtsBtn.classList.add('hidden');
                     };
                     audio.onerror = () => {
+                        target.dataset.isPlaying = 'false';
                         btnText.textContent = 'Error';
                         setTimeout(() => {
                             btnText.textContent = 'Play';
-                            target.disabled = false;
-                            target.classList.remove('opacity-75');
+                            target.classList.remove('bg-red-600', 'hover:bg-red-500');
+                            target.classList.add('bg-blue-600', 'hover:bg-blue-500');
                         }, 2000);
+                        if (currentPlayingAudio === audio) currentPlayingAudio = null;
+                        pauseTtsBtn.classList.add('hidden');
                     };
                 }
             }
@@ -501,7 +663,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                                 <span class="text-sm font-semibold text-slate-200 truncate">${ann.name}</span>
                                 <span class="text-xs text-slate-400 truncate">${ann.fileName}</span>
                             </div>
-                            <button data-train-id="${train.id}" data-ann-id="${ann.id}" class="play-audio-btn shrink-0 btn-press bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold shadow-md min-w-[80px] justify-center">
+                            <button data-train-id="${train.id}" data-ann-id="${ann.id}" data-is-playing="false" class="play-audio-btn shrink-0 btn-press bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold shadow-md min-w-[85px] justify-center transition-colors">
                                 <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69Z"></path></svg>
                                 <span class="play-text">Play</span>
                             </button>
