@@ -204,7 +204,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
             <h3 class="text-lg font-bold text-slate-100">Konfigurasi Gemini API Key</h3>
             <p class="text-xs text-slate-400">
-                Untuk penggunaan di GitHub Pages (hosting statis tanpa server backend), aplikasi memerlukan Google Gemini API Key yang valid. Anda bisa mendapatkan kunci gratis dari <a href="https://aistudio.google.com/" target="_blank" class="text-orange-400 underline">Google AI Studio</a>.
+                Untuk penggunaan di GitHub Pages (hosting statis tanpa server backend), aplikasi memerlukan Google Gemini API Key yang valid. Dapatkan kunci gratis dari <a href="https://aistudio.google.com/" target="_blank" class="text-orange-400 underline">Google AI Studio</a>.
             </p>
             <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">Gemini API Key</label>
@@ -225,7 +225,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
     </div>
 
     <script>
-        // --- IndexedDB for Robust Audio Persistence ---
         let db;
         const dbName = "KetapangAnnouncerDB";
         const storeName = "audioFiles";
@@ -280,7 +279,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             });
         }
 
-        // --- API Key Modal Controls ---
         const apiKeyBtn = document.getElementById('apiKeyBtn');
         const apiKeyModal = document.getElementById('apiKeyModal');
         const closeApiKeyModal = document.getElementById('closeApiKeyModal');
@@ -298,31 +296,38 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             apiKeyModal.classList.add('hidden');
         });
 
-        saveApiKeyBtn.addEventListener('click', () => {
+        saveApiKeyBtn.addEventListener('click', async () => {
             const key = apiKeyInput.value.trim();
-            if (key) {
-                localStorage.setItem('gemini_api_key', key);
-                apiKeyStatus.textContent = 'Status: Kunci berhasil disimpan!';
-                setTimeout(() => {
-                    apiKeyModal.classList.add('hidden');
-                }, 800);
-            } else {
+            if (!key) {
                 localStorage.removeItem('gemini_api_key');
                 apiKeyStatus.textContent = 'Status: Kunci dihapus.';
+                return;
+            }
+            apiKeyStatus.textContent = 'Memvalidasi API key...';
+            saveApiKeyBtn.disabled = true;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
+                });
+                if (res.ok) {
+                    localStorage.setItem('gemini_api_key', key);
+                    apiKeyStatus.textContent = 'Status: Kunci valid & tersimpan!';
+                    setTimeout(() => {
+                        apiKeyModal.classList.add('hidden');
+                    }, 800);
+                } else {
+                    const err = await res.json();
+                    apiKeyStatus.textContent = 'Status: API Key tidak valid (' + (err.error?.message || 'Unauthorized') + ')';
+                }
+            } catch (e) {
+                apiKeyStatus.textContent = 'Status: Gagal menghubungi server Google.';
+            } finally {
+                saveApiKeyBtn.disabled = false;
             }
         });
 
-        // Auto prompt API key if missing and user tries TTS
-        function checkApiKey() {
-            const key = localStorage.getItem('gemini_api_key');
-            if (!key) {
-                apiKeyModal.classList.remove('hidden');
-                return false;
-            }
-            return true;
-        }
-
-        // --- Audio Context & Web Audio API (Ding Dong) ---
         let audioCtx;
         
         function initAudio() {
@@ -454,12 +459,8 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             } catch (err) {
                 let apiKey = localStorage.getItem('gemini_api_key');
                 if (!apiKey) {
-                    apiKey = prompt("Masukkan Google Gemini API Key Anda:");
-                    if (apiKey) {
-                        localStorage.setItem('gemini_api_key', apiKey.trim());
-                    } else {
-                        throw new Error('Gemini API Key diperlukan. Silakan klik tombol "Pengaturan API Key" di atas.');
-                    }
+                    apiKeyModal.classList.remove('hidden');
+                    throw new Error('Gemini API Key belum diatur. Silakan masukkan API Key Anda melalui tombol Pengaturan API Key.');
                 }
 
                 const payload = {
@@ -472,9 +473,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                             }
                         }
                     },
-                    model: "gemini-2.5-flash"
+                    model: "gemini-2.0-flash"
                 };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const directResp = await fetch(apiUrl, {
                     method: 'POST',
@@ -484,7 +485,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                 if (!directResp.ok) {
                     const errText = await directResp.text();
-                    let errMsg = 'Direct Gemini TTS API Failed';
+                    let errMsg = 'Direct Gemini TTS API Failed. Pastikan API Key valid.';
                     try {
                         const errJson = JSON.parse(errText);
                         errMsg = errJson.error?.message || errMsg;
@@ -606,7 +607,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         });
 
-        // --- Trains Management with IndexedDB Persistence ---
         let trains = [];
         const trainsContainer = document.getElementById('trainsContainer');
         const emptyState = document.getElementById('emptyTrainState');
@@ -631,7 +631,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const meta = localStorage.getItem('ketapang_trains_meta');
                 if (meta) {
                     trains = JSON.parse(meta);
-                    // Recreate object URLs for each announcement from IndexedDB blobs
                     for (const train of trains) {
                         for (const ann of train.announcements) {
                             const blob = await getAudioFromIDB(ann.id);
@@ -727,7 +726,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                     target.disabled = true;
                     btnText.textContent = 'Bel...';
-                    pauseTtsBtn.classList.remove('hidden');
+                    pauseTtsBtn.classList.add('hidden');
                     await playDingDong(parseFloat(speedSlider.value));
 
                     btnText.textContent = 'Memutar...';
@@ -764,7 +763,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
             
             if(target.classList.contains('delete-train-btn')) {
-                // Delete associated audio files from IDB
                 for (const ann of train.announcements) {
                     await deleteAudioFromIDB(ann.id);
                 }

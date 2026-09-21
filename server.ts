@@ -29,10 +29,10 @@ app.post("/api/tts", async (req, res) => {
           }
         }
       },
-      model: "gemini-2.5-flash"
+      model: "gemini-2.0-flash"
     };
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
