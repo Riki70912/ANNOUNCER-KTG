@@ -370,7 +370,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 }
             }
 
-            // 3. Call Gemini API directly from client using the key
+            // 3. Call Gemini API from client (Direct or via CORS Proxy for GitHub Pages)
             const payload = {
                 contents: [{ parts: [{ text: text }] }],
                 generationConfig: {
@@ -384,11 +384,28 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             };
 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${apiKey}`;
-            const clientResponse = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            
+            let clientResponse = null;
+            try {
+                // Try direct fetch first
+                clientResponse = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (directErr) {
+                console.warn("Direct fetch blocked by CORS (expected on GitHub Pages), trying CORS proxy...");
+            }
+
+            // If direct fetch failed or wasn't ok, try via CORS proxy
+            if (!clientResponse || !clientResponse.ok) {
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
+                clientResponse = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             if (!clientResponse.ok) {
                 const errText = await clientResponse.text();
