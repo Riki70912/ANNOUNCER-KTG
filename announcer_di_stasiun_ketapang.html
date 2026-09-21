@@ -73,10 +73,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button id="apiKeyBtn" class="btn-press bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,48H32a8,8,0,0,0-8,8V192a8,8,0,0,0,8,8H224a8,8,0,0,0,8-8V56A8,8,0,0,0,224,48Zm-8,136H40V64H216ZM112,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Z"></path></svg>
-                    <span>Pengaturan API Key</span>
-                </button>
+                <span class="text-xs text-orange-300 bg-orange-500/10 border border-orange-500/30 px-3 py-1.5 rounded-xl font-medium">Sistem AI Siap Digunakan</span>
             </div>
         </div>
     </header>
@@ -115,13 +112,17 @@
                 
                 <div class="space-y-4 flex-grow flex flex-col">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara (AI)</label>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara AI (Announcer Wanita Stasiun)</label>
                         <select id="voiceSelect" class="w-full input-field rounded-lg p-2.5 text-sm text-slate-200 font-medium">
-                            <option value="Sulafat" selected>Sulafat (Natural Warm)</option>
-                            <option value="Kore">Kore (Firm)</option>
-                            <option value="Puck">Puck (Upbeat)</option>
-                            <option value="Zephyr">Zephyr (Bright)</option>
+                            <option value="Sulafat" selected>Sulafat — Suara Wanita Utama & Natural (Rekomendasi Utama Stasiun)</option>
+                            <option value="Aoede" class="text-slate-300">Aoede — Suara Wanita Formal, Anggun & Berwibawa</option>
+                            <option value="Zephyr" class="text-slate-300">Zephyr — Suara Wanita Cerah, Jernih & Dinamis (Informasi)</option>
+                            <option value="Kore" class="text-slate-300">Kore — Suara Wanita Tegas, Formal & Profesional</option>
+                            <option value="Puck" class="text-slate-300">Puck — Suara Wanita Ramah & Hangat (Suasana Stasiun)</option>
+                            <option value="Fenrir" class="text-slate-300">Fenrir — Suara Bersemangat & Lantang (Pemberitahuan Cepat)</option>
+                            <option value="Charon" class="text-slate-300">Charon — Suara Pria Dalam & Berwibawa (Alternatif)</option>
                         </select>
+                        <p class="text-xs text-slate-400 mt-1">Pilihan suara tersinkron penuh dengan Gemini AI TTS & pemutaran audio stasiun.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -141,10 +142,13 @@
                     </div>
 
                     <div class="flex-grow flex flex-col">
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Teks Announcement</label>
-                        <textarea id="ttsText" class="w-full flex-grow input-field rounded-lg p-3 text-sm text-slate-200 resize-none min-h-[200px]" placeholder="Masukkan teks pengumuman...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, Paspor, atau kartu identitas berfoto lainnya. Jika kedapatan tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan untuk memasuki pintu boarding, dan tiket dianggap hangus atau tidak berlaku. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-sm font-medium text-slate-300">Teks Announcement</label>
+                        </div>
+                        <textarea id="ttsText" class="w-full flex-grow input-field rounded-lg p-3 text-sm text-slate-200 resize-none min-h-[180px]" placeholder="Masukkan teks pengumuman...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, Paspor, atau kartu identitas berfoto lainnya. Jika kedapatan tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan untuk memasuki pintu boarding, dan tiket dianggap hangus atau tidak berlaku. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
 
 Attention please. To all Mutiara Timur train passengers, we invite you to enter the boarding gate. Before entering the boarding gate, please prepare your ticket and original ID card. If it is found that the ticket does not match the identity, passengers are not allowed to enter the boarding gate, and the ticket is considered invalid or expired. Thank you for your attention and cooperation.</textarea>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Catatan: Pilihan suara AI neural (Sulafat, Aoede, Zephyr, dll) aktif sepenuhnya menggunakan **Gemini API Key**. Jika API Key belum diatur, sistem menggunakan suara bawaan browser (SpeechSynthesis).</p>
                     </div>
 
                     <div class="flex flex-col gap-2 mt-2">
@@ -199,134 +203,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         </div>
     </main>
 
-    <!-- API Key Modal -->
-    <div id="apiKeyModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 class="text-lg font-bold text-slate-100">Konfigurasi Gemini API Key</h3>
-            <p class="text-xs text-slate-400">
-                Untuk penggunaan di GitHub Pages (hosting statis tanpa server backend), aplikasi memerlukan Google Gemini API Key yang valid. Dapatkan kunci gratis dari <a href="https://aistudio.google.com/" target="_blank" class="text-orange-400 underline">Google AI Studio</a>.
-            </p>
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Gemini API Key</label>
-                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full input-field rounded-lg px-3 py-2 text-sm text-slate-200">
-            </div>
-            <div class="flex justify-between items-center pt-2">
-                <span id="apiKeyStatus" class="text-xs text-slate-400"></span>
-                <div class="flex gap-2">
-                    <button id="closeApiKeyModal" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors">
-                        Batal
-                    </button>
-                    <button id="saveApiKeyBtn" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-sm font-bold transition-colors">
-                        Simpan & Validasi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        let db;
-        const dbName = "KetapangAnnouncerDB";
-        const storeName = "audioFiles";
-
-        function initIndexedDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(dbName, 1);
-                request.onerror = (event) => reject(event.target.error);
-                request.onsuccess = (event) => {
-                    db = event.target.result;
-                    resolve(db);
-                };
-                request.onupgradeneeded = (event) => {
-                    const database = event.target.result;
-                    if (!database.objectStoreNames.contains(storeName)) {
-                        database.createObjectStore(storeName);
-                    }
-                };
-            });
-        }
-
-        function saveAudioToIDB(id, blob) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve();
-                const transaction = db.transaction([storeName], "readwrite");
-                const store = transaction.objectStore(storeName);
-                const request = store.put(blob, id);
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function getAudioFromIDB(id) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve(null);
-                const transaction = db.transaction([storeName], "readonly");
-                const store = transaction.objectStore(storeName);
-                const request = store.get(id);
-                request.onsuccess = (e) => resolve(e.target.result);
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function deleteAudioFromIDB(id) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve();
-                const transaction = db.transaction([storeName], "readwrite");
-                const store = transaction.objectStore(storeName);
-                const request = store.delete(id);
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        const apiKeyBtn = document.getElementById('apiKeyBtn');
-        const apiKeyModal = document.getElementById('apiKeyModal');
-        const closeApiKeyModal = document.getElementById('closeApiKeyModal');
-        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const apiKeyStatus = document.getElementById('apiKeyStatus');
-
-        apiKeyBtn.addEventListener('click', () => {
-            apiKeyInput.value = localStorage.getItem('gemini_api_key') || '';
-            apiKeyStatus.textContent = localStorage.getItem('gemini_api_key') ? 'Status: Kunci tersimpan' : 'Status: Belum diatur';
-            apiKeyModal.classList.remove('hidden');
-        });
-
-        closeApiKeyModal.addEventListener('click', () => {
-            apiKeyModal.classList.add('hidden');
-        });
-
-        saveApiKeyBtn.addEventListener('click', async () => {
-            const key = apiKeyInput.value.trim();
-            if (!key) {
-                localStorage.removeItem('gemini_api_key');
-                apiKeyStatus.textContent = 'Status: Kunci dihapus.';
-                return;
-            }
-            apiKeyStatus.textContent = 'Memvalidasi API key...';
-            saveApiKeyBtn.disabled = true;
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
-                });
-                if (res.ok) {
-                    localStorage.setItem('gemini_api_key', key);
-                    apiKeyStatus.textContent = 'Status: Kunci valid & tersimpan!';
-                    setTimeout(() => {
-                        apiKeyModal.classList.add('hidden');
-                    }, 800);
-                } else {
-                    const err = await res.json();
-                    apiKeyStatus.textContent = 'Status: API Key tidak valid (' + (err.error?.message || 'Unauthorized') + ')';
-                }
-            } catch (e) {
-                apiKeyStatus.textContent = 'Status: Gagal menghubungi server Google.';
-            } finally {
-                saveApiKeyBtn.disabled = false;
-            }
-        });
 
         let audioCtx;
         
@@ -444,56 +321,16 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         }
 
         async function fetchGeminiTTS(text, voiceName) {
-            let resultData;
-            try {
-                const response = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, voiceName })
-                });
-                if (response.ok) {
-                    resultData = await response.json();
-                } else {
-                    throw new Error('Server proxy not available');
-                }
-            } catch (err) {
-                let apiKey = localStorage.getItem('gemini_api_key');
-                if (!apiKey) {
-                    apiKeyModal.classList.remove('hidden');
-                    throw new Error('Gemini API Key belum diatur. Silakan masukkan API Key Anda melalui tombol Pengaturan API Key.');
-                }
-
-                const payload = {
-                    contents: [{ parts: [{ text: text }] }],
-                    generationConfig: {
-                        responseModalities: ["AUDIO"],
-                        speechConfig: {
-                            voiceConfig: {
-                                prebuiltVoiceConfig: { voiceName: voiceName }
-                            }
-                        }
-                    },
-                    model: "gemini-2.0-flash"
-                };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const directResp = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!directResp.ok) {
-                    const errText = await directResp.text();
-                    let errMsg = 'Direct Gemini TTS API Failed. Pastikan API Key valid.';
-                    try {
-                        const errJson = JSON.parse(errText);
-                        errMsg = errJson.error?.message || errMsg;
-                    } catch(e) {}
-                    throw new Error(errMsg);
-                }
-                resultData = await directResp.json();
+            const response = await fetch('/api/tts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, voiceName })
+            });
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || 'Server TTS proxy failed');
             }
+            const resultData = await response.json();
 
             const part = resultData?.candidates?.[0]?.content?.parts?.[0];
             const audioData = part?.inlineData?.data;
@@ -577,16 +414,12 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                 document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
 
-                const apiKey = localStorage.getItem('gemini_api_key');
                 let audioUrl = null;
-
-                if (apiKey) {
-                    try {
-                        const voice = voiceSelect.value;
-                        audioUrl = await fetchGeminiTTS(text, voice);
-                    } catch (apiErr) {
-                        console.warn("Gemini API TTS failed or unconfigured, falling back to Browser SpeechSynthesis:", apiErr);
-                    }
+                try {
+                    const voice = voiceSelect.value;
+                    audioUrl = await fetchGeminiTTS(text, voice);
+                } catch (apiErr) {
+                    console.warn("Gemini API TTS failed, falling back to Browser SpeechSynthesis:", apiErr);
                 }
 
                 if (audioUrl) {
@@ -615,9 +448,16 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         utterance.pitch = 1.0;
                         
                         const voices = window.speechSynthesis.getVoices();
-                        const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
-                        if (idVoice) {
-                            utterance.voice = idVoice;
+                        const selectedVoiceName = voiceSelect.value;
+                        let targetVoice = voices.find(v => v.name.toLowerCase().includes(selectedVoiceName.toLowerCase()));
+                        if (!targetVoice) {
+                            targetVoice = voices.find(v => (v.lang.startsWith('id') || v.lang.startsWith('in')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('damayanti') || v.name.toLowerCase().includes('gadis') || v.name.toLowerCase().includes('indonesia')));
+                        }
+                        if (!targetVoice) {
+                            targetVoice = voices.find(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
+                        }
+                        if (targetVoice) {
+                            utterance.voice = targetVoice;
                         } else {
                             utterance.lang = 'id-ID';
                         }
@@ -681,6 +521,8 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         loadTrains();
 
         function generateId() { return Math.random().toString(36).substr(2, 9); }
+
+
 
         document.getElementById('addTrainBtn').addEventListener('click', () => {
             const name = newTrainNameInput.value.trim();

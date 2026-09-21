@@ -14,7 +14,7 @@ app.use(express.json({ limit: "50mb" }));
 app.post("/api/tts", async (req, res) => {
   try {
     const { text, voiceName } = req.body;
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || process.env.GOOGLE_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: "GEMINI_API_KEY is not configured on the server." });
     }
@@ -28,11 +28,10 @@ app.post("/api/tts", async (req, res) => {
             prebuiltVoiceConfig: { voiceName: voiceName || "Sulafat" }
           }
         }
-      },
-      model: "gemini-2.0-flash"
+      }
     };
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${apiKey}`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
