@@ -138,7 +138,6 @@
 
                     <div class="flex-grow flex flex-col">
                         <label class="block text-sm font-medium text-slate-300 mb-1">Teks Announcement</label>
-                        <!-- Default text is set to Mutiara Timur boarding announcement -->
                         <textarea id="ttsText" class="w-full flex-grow input-field rounded-lg p-3 text-sm text-slate-200 resize-none min-h-[200px]" placeholder="Masukkan teks pengumuman...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, Paspor, atau kartu identitas berfoto lainnya. Jika kedapatan tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan untuk memasuki pintu boarding, dan tiket dianggap hangus atau tidak berlaku. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
 
 Attention please. To all Mutiara Timur train passengers, we invite you to enter the boarding gate. Before entering the boarding gate, please prepare your ticket and original ID card. If it is found that the ticket does not match the identity, passengers are not allowed to enter the boarding gate, and the ticket is considered invalid or expired. Thank you for your attention and cooperation.</textarea>
@@ -151,7 +150,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                             <span id="ttsBtnText">Play TTS (dengan Bel)</span>
                         </button>
                         
-                        <!-- NEW: Download Button -->
                         <a id="downloadTtsBtn" class="hidden btn-press w-full py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2" download="Pengumuman_TTS.wav">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
                             Download Audio TTS (.wav)
@@ -170,7 +168,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         <h2 class="text-lg font-semibold text-slate-100">Manajemen File Audio Kereta</h2>
                     </div>
                     
-                    <!-- Add Train Form -->
                     <div class="flex items-center gap-2">
                         <input type="text" id="newTrainName" placeholder="Nama Kereta (Misal: Mutiara Timur)" class="input-field rounded-lg px-3 py-1.5 text-sm w-56 sm:w-64">
                         <button id="addTrainBtn" class="btn-press bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
@@ -179,9 +176,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     </div>
                 </div>
 
-                <!-- Train List Container -->
                 <div id="trainsContainer" class="flex-grow space-y-4 overflow-y-auto pr-2 pb-4">
-                    <!-- Dynamic Content Will Render Here -->
                     <div class="text-center text-slate-500 text-sm py-10" id="emptyTrainState">
                         Belum ada menu kereta. Silakan tambahkan kereta di atas untuk mulai mengupload audio.
                     </div>
@@ -192,7 +187,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
     </main>
 
     <script>
-        // --- 1. Audio Context & Web Audio API (Ding Dong) ---
         let audioCtx;
         
         function initAudio() {
@@ -204,13 +198,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         }
 
-        // Generate Ding Dong Sound 
         function playDingDong(speed) {
             return new Promise((resolve) => {
                 initAudio();
                 const now = audioCtx.currentTime;
-                
-                // Classic chime notes
                 const freqDing = 659.25; // E5
                 const freqDong = 523.25; // C5
 
@@ -235,12 +226,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 createBell(freqDing, now);
                 createBell(freqDong, now + speed);
 
-                // Wait for the bell sequence to end
                 setTimeout(resolve, (speed + 2) * 1000); 
             });
         }
 
-        // --- 2. Chime UI Controls ---
         const speedSlider = document.getElementById('chimeSpeed');
         const speedDisplay = document.getElementById('chimeSpeedDisplay');
         const testChimeBtn = document.getElementById('testChimeBtn');
@@ -260,8 +249,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             });
         });
 
-        // --- STREAMING_CHUNK:Gemini AI TTS Engine ---
-        // UI Bindings for TTS
         const voiceSelect = document.getElementById('voiceSelect');
         const tempSlider = document.getElementById('ttsTemp');
         const tempDisplay = document.getElementById('tempDisplay');
@@ -276,35 +263,30 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             tempDisplay.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
-        // Convert raw PCM 16-bit to WAV Blob
         function pcmToWav(pcm16, sampleRate) {
-            const numChannels = 1; // Gemini TTS returns Mono audio
+            const numChannels = 1;
             const byteRate = sampleRate * numChannels * 2;
             const blockAlign = numChannels * 2;
             const dataSize = pcm16.length * 2;
             const buffer = new ArrayBuffer(44 + dataSize);
             const view = new DataView(buffer);
 
-            // RIFF chunk descriptor
             writeString(view, 0, 'RIFF');
             view.setUint32(4, 36 + dataSize, true);
             writeString(view, 8, 'WAVE');
             
-            // fmt sub-chunk
             writeString(view, 12, 'fmt ');
             view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // Linear PCM
+            view.setUint16(20, 1, true);
             view.setUint16(22, numChannels, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, byteRate, true);
             view.setUint16(32, blockAlign, true);
-            view.setUint16(34, 16, true); // bits per sample
+            view.setUint16(34, 16, true);
             
-            // data sub-chunk
             writeString(view, 36, 'data');
             view.setUint32(40, dataSize, true);
 
-            // Write PCM samples
             let offset = 44;
             for (let i = 0; i < pcm16.length; i++, offset += 2) {
                 view.setInt16(offset, pcm16[i], true);
@@ -350,49 +332,40 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             throw new Error('Invalid audio data from API');
         }
 
-        // Handle Generation & Playback
         generateTtsBtn.addEventListener('click', async () => {
             const text = ttsText.value.trim();
             if (!text) return;
 
-            // Stop current if single speaker mode is ON
             if (singleSpeakerCheck.checked && currentPlayingAudio) {
                 currentPlayingAudio.pause();
                 currentPlayingAudio.currentTime = 0;
             }
 
-            // Set Loading UI
             generateTtsBtn.disabled = true;
             generateTtsBtn.classList.add('opacity-50');
-            downloadTtsBtn.classList.add('hidden'); // Sembunyikan tombol download saat proses awal
+            downloadTtsBtn.classList.add('hidden');
             document.getElementById('ttsIcon').classList.add('hidden');
             document.getElementById('ttsLoading').classList.remove('hidden');
             document.getElementById('ttsBtnText').textContent = 'Memproses Suara AI...';
 
             try {
-                // Fetch AI Audio
                 const voice = voiceSelect.value;
                 const audioUrl = await fetchGeminiTTS(text, voice);
                 
-                // Menyiapkan Link Download
                 downloadTtsBtn.href = audioUrl;
-                downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`; // Menamai file berdasarkan suara yang dipilih
-                downloadTtsBtn.classList.remove('hidden'); // Memunculkan tombol download
+                downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`;
+                downloadTtsBtn.classList.remove('hidden');
 
-                // Process Completed, start playing Sequence
                 document.getElementById('ttsLoading').classList.add('hidden');
                 document.getElementById('ttsIcon').classList.remove('hidden');
                 document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
 
-                // Play Ding Dong
                 const speed = parseFloat(speedSlider.value);
                 await playDingDong(speed);
 
-                // Play Generated Voice
                 document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman...';
                 
                 const audio = new Audio(audioUrl);
-                // Simple hack: use HTML5 audio playbackRate to simulate temperature/speed adjustments
                 audio.playbackRate = parseFloat(tempSlider.value); 
                 currentPlayingAudio = audio;
                 
@@ -406,7 +379,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 console.error(error);
                 alert("Terjadi kesalahan saat memproses suara. Pastikan koneksi internet stabil.");
             } finally {
-                // Reset UI
                 generateTtsBtn.disabled = false;
                 generateTtsBtn.classList.remove('opacity-50');
                 document.getElementById('ttsIcon').classList.remove('hidden');
@@ -416,8 +388,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         });
 
-        // --- STREAMING_CHUNK:Train & Audio File Management ---
-        let trains = []; // Array of { id, name, announcements: [] }
+        let trains = [];
         const trainsContainer = document.getElementById('trainsContainer');
         const emptyState = document.getElementById('emptyTrainState');
         const newTrainNameInput = document.getElementById('newTrainName');
@@ -433,7 +404,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         });
 
-        // Event Delegation for train dynamic DOM elements
         trainsContainer.addEventListener('click', async (e) => {
             const target = e.target.closest('button');
             if (!target) return;
@@ -442,7 +412,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             const train = trains.find(t => t.id === trainId);
             if (!train) return;
             
-            // Add File Announcement
             if (target.classList.contains('add-announcement-btn')) {
                 const nameInput = document.querySelector(`.announcement-name[data-train-id="${trainId}"]`);
                 const fileInput = document.querySelector(`.announcement-file[data-train-id="${trainId}"]`);
@@ -460,18 +429,15 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     });
                     renderTrains();
                 } else {
-                    // Using fallback basic alert if fields are empty
                     alert("Harap isi nama pengumuman dan pilih file audio (.mp3, .wav)."); 
                 }
             }
 
-            // Play File Announcement
             if (target.classList.contains('play-audio-btn')) {
                 const annId = target.dataset.annId;
                 const ann = train.announcements.find(a => a.id === annId);
                 
                 if (ann) {
-                    const btnIcon = target.querySelector('.play-icon');
                     const btnText = target.querySelector('.play-text');
                     
                     target.disabled = true;
@@ -482,11 +448,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         currentPlayingAudio.currentTime = 0;
                     }
 
-                    // 1. Play Ding Dong
                     btnText.textContent = 'Bel...';
                     await playDingDong(parseFloat(speedSlider.value));
 
-                    // 2. Play Uploaded File
                     btnText.textContent = 'Memutar...';
                     const audio = new Audio(ann.fileUrl);
                     currentPlayingAudio = audio;
@@ -508,14 +472,12 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 }
             }
             
-            // Delete Train
             if(target.classList.contains('delete-train-btn')) {
                 trains = trains.filter(t => t.id !== trainId);
                 renderTrains();
             }
         });
 
-        // Render Train UI
         function renderTrains() {
             if (trains.length === 0) {
                 emptyState.style.display = 'block';
@@ -566,7 +528,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                             </button>
                         </div>
 
-                        <!-- Audio List -->
                         <div class="space-y-2">
                             ${announcementsHtml}
                         </div>
