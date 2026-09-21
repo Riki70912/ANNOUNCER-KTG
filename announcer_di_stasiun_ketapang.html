@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANNOUNCER DI STASIUN KETAPANG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc; /* Slate 50 */
+        }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-field {
+            background-color: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: #f97316;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-press {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-press:active {
+            transform: scale(0.96);
+        }
+
+        /* Spinner for loading state */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-200">
+
+    <header class="bg-slate-900 border-b border-slate-700/50 py-5 px-6 shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-orange-500/10 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256" class="text-orange-500">
+                        <path fill="currentColor" d="M176,16H80A48.05,48.05,0,0,0,32,64v96a48.05,48.05,0,0,0,48,48v16a8,8,0,0,0,16,0V208h64v16a8,8,0,0,0,16,0V208a48.05,48.05,0,0,0,48-48V64A48.05,48.05,0,0,0,176,16ZM80,32h96a32,32,0,0,1,32,32V80H48V64A32,32,0,0,1,80,32Zm8,128a16,16,0,1,1,16-16A16,16,0,0,1,88,160Zm80,0a16,16,0,1,1,16-16A16,16,0,0,1,168,160Zm40-48H48V96H208Z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-200">
+                        ANNOUNCER DI STASIUN KETAPANG
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">Sistem Pengumuman Terpadu</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Chime Settings -->
+            <section class="glass-panel rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-blue-400"><path fill="currentColor" d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216Z"></path></svg>
+                    <h2 class="text-lg font-semibold text-slate-100">Bel 'Ding Dong' Awal</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                            <span>Level Kecepatan (Jeda Nada)</span>
+                            <span id="chimeSpeedDisplay" class="text-orange-400 font-mono">0.8s</span>
+                        </label>
+                        <input type="range" id="chimeSpeed" min="0.2" max="2.0" step="0.1" value="0.8" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                    </div>
+                    <button id="testChimeBtn" class="btn-press w-full py-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/50 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+                        Test Suara Bel
+                    </button>
+                </div>
+            </section>
+
+            <!-- TTS Generator -->
+            <section class="glass-panel rounded-2xl p-5 flex flex-col flex-grow">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-orange-400"><path fill="currentColor" d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-1.08L40,215.61l12.5-37.5a8,8,0,0,0-1.08-6.54A88,88,0,1,1,128,216Z"></path></svg>
+                    <h2 class="text-lg font-semibold text-slate-100">Generator Pengumuman (TTS)</h2>
+                </div>
+                
+                <div class="space-y-4 flex-grow flex flex-col">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara (AI)</label>
+                        <select id="voiceSelect" class="w-full input-field rounded-lg p-2.5 text-sm text-slate-200 font-medium">
+                            <option value="Sulafat" selected>Sulafat (Natural Warm)</option>
+                            <option value="Kore">Kore (Firm)</option>
+                            <option value="Puck">Puck (Upbeat)</option>
+                            <option value="Zephyr">Zephyr (Bright)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-1">
+                                <span>Temperatur</span>
+                                <span id="tempDisplay" class="text-orange-400 font-mono">1.0</span>
+                            </label>
+                            <input type="range" id="ttsTemp" min="0.5" max="1.5" step="0.1" value="1.0" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500 mt-2">
+                        </div>
+                        <div class="flex items-center justify-end h-full pt-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="singleSpeaker" checked class="w-4 h-4 text-orange-500 bg-slate-700 border-slate-600 rounded focus:ring-orange-500 focus:ring-2">
+                                <span class="text-sm font-medium text-slate-300">Single Speaker</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow flex flex-col">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Teks Announcement</label>
+                        <!-- Default text is set to Mutiara Timur boarding announcement -->
+                        <textarea id="ttsText" class="w-full flex-grow input-field rounded-lg p-3 text-sm text-slate-200 resize-none min-h-[200px]" placeholder="Masukkan teks pengumuman...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, Paspor, atau kartu identitas berfoto lainnya. Jika kedapatan tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan untuk memasuki pintu boarding, dan tiket dianggap hangus atau tidak berlaku. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
+
+Attention please. To all Mutiara Timur train passengers, we invite you to enter the boarding gate. Before entering the boarding gate, please prepare your ticket and original ID card. If it is found that the ticket does not match the identity, passengers are not allowed to enter the boarding gate, and the ticket is considered invalid or expired. Thank you for your attention and cooperation.</textarea>
+                    </div>
+
+                    <div class="flex flex-col gap-2 mt-2">
+                        <button id="generateTtsBtn" class="btn-press w-full py-3.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl font-bold shadow-lg shadow-orange-900/30 flex items-center justify-center gap-2">
+                            <svg id="ttsIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69ZM72,216l144-96L72,40Z"></path></svg>
+                            <div id="ttsLoading" class="spinner hidden"></div>
+                            <span id="ttsBtnText">Play TTS (dengan Bel)</span>
+                        </button>
+                        
+                        <!-- NEW: Download Button -->
+                        <a id="downloadTtsBtn" class="hidden btn-press w-full py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2" download="Pengumuman_TTS.wav">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+                            Download Audio TTS (.wav)
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col h-full">
+            <section class="glass-panel rounded-2xl p-5 flex flex-col h-full">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-700/50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-green-400"><path fill="currentColor" d="M240,192h-8V96a16,16,0,0,0-16-16H40A16,16,0,0,0,24,96v96H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,96H216v96H40Zm8,24h64a8,8,0,0,1,0,16H48a8,8,0,0,1,0-16Zm96,0h48a8,8,0,0,1,0,16H144a8,8,0,0,1,0-16Z"></path></svg>
+                        <h2 class="text-lg font-semibold text-slate-100">Manajemen File Audio Kereta</h2>
+                    </div>
+                    
+                    <!-- Add Train Form -->
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="newTrainName" placeholder="Nama Kereta (Misal: Mutiara Timur)" class="input-field rounded-lg px-3 py-1.5 text-sm w-56 sm:w-64">
+                        <button id="addTrainBtn" class="btn-press bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
+                            + Tambah
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Train List Container -->
+                <div id="trainsContainer" class="flex-grow space-y-4 overflow-y-auto pr-2 pb-4">
+                    <!-- Dynamic Content Will Render Here -->
+                    <div class="text-center text-slate-500 text-sm py-10" id="emptyTrainState">
+                        Belum ada menu kereta. Silakan tambahkan kereta di atas untuk mulai mengupload audio.
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // --- 1. Audio Context & Web Audio API (Ding Dong) ---
+        let audioCtx;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Generate Ding Dong Sound 
+        function playDingDong(speed) {
+            return new Promise((resolve) => {
+                initAudio();
+                const now = audioCtx.currentTime;
+                
+                // Classic chime notes
+                const freqDing = 659.25; // E5
+                const freqDong = 523.25; // C5
+
+                function createBell(freq, startTime) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, startTime);
+                    
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start(startTime);
+                    osc.stop(startTime + 2);
+                }
+
+                createBell(freqDing, now);
+                createBell(freqDong, now + speed);
+
+                // Wait for the bell sequence to end
+                setTimeout(resolve, (speed + 2) * 1000); 
+            });
+        }
+
+        // --- 2. Chime UI Controls ---
+        const speedSlider = document.getElementById('chimeSpeed');
+        const speedDisplay = document.getElementById('chimeSpeedDisplay');
+        const testChimeBtn = document.getElementById('testChimeBtn');
+
+        speedSlider.addEventListener('input', (e) => {
+            speedDisplay.textContent = e.target.value + 's';
+        });
+
+        testChimeBtn.addEventListener('click', () => {
+            testChimeBtn.disabled = true;
+            testChimeBtn.classList.add('opacity-50');
+            testChimeBtn.innerHTML = 'Memutar...';
+            playDingDong(parseFloat(speedSlider.value)).then(() => {
+                testChimeBtn.disabled = false;
+                testChimeBtn.classList.remove('opacity-50');
+                testChimeBtn.innerHTML = 'Test Suara Bel';
+            });
+        });
+
+        // --- STREAMING_CHUNK:Gemini AI TTS Engine ---
+        // UI Bindings for TTS
+        const voiceSelect = document.getElementById('voiceSelect');
+        const tempSlider = document.getElementById('ttsTemp');
+        const tempDisplay = document.getElementById('tempDisplay');
+        const generateTtsBtn = document.getElementById('generateTtsBtn');
+        const ttsText = document.getElementById('ttsText');
+        const singleSpeakerCheck = document.getElementById('singleSpeaker');
+        const downloadTtsBtn = document.getElementById('downloadTtsBtn');
+        
+        let currentPlayingAudio = null;
+
+        tempSlider.addEventListener('input', (e) => {
+            tempDisplay.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        // Convert raw PCM 16-bit to WAV Blob
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1; // Gemini TTS returns Mono audio
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const dataSize = pcm16.length * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            // RIFF chunk descriptor
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            
+            // fmt sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // Linear PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // bits per sample
+            
+            // data sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            // Write PCM samples
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        async function fetchGeminiTTS(text, voiceName) {
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voiceName }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+            const apiKey = ""; // Automatically injected by canvas
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) throw new Error('TTS API Failed');
+            
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                
+                const binaryString = atob(audioData);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                const pcm16 = new Int16Array(bytes.buffer);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                return URL.createObjectURL(wavBlob);
+            }
+            throw new Error('Invalid audio data from API');
+        }
+
+        // Handle Generation & Playback
+        generateTtsBtn.addEventListener('click', async () => {
+            const text = ttsText.value.trim();
+            if (!text) return;
+
+            // Stop current if single speaker mode is ON
+            if (singleSpeakerCheck.checked && currentPlayingAudio) {
+                currentPlayingAudio.pause();
+                currentPlayingAudio.currentTime = 0;
+            }
+
+            // Set Loading UI
+            generateTtsBtn.disabled = true;
+            generateTtsBtn.classList.add('opacity-50');
+            downloadTtsBtn.classList.add('hidden'); // Sembunyikan tombol download saat proses awal
+            document.getElementById('ttsIcon').classList.add('hidden');
+            document.getElementById('ttsLoading').classList.remove('hidden');
+            document.getElementById('ttsBtnText').textContent = 'Memproses Suara AI...';
+
+            try {
+                // Fetch AI Audio
+                const voice = voiceSelect.value;
+                const audioUrl = await fetchGeminiTTS(text, voice);
+                
+                // Menyiapkan Link Download
+                downloadTtsBtn.href = audioUrl;
+                downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`; // Menamai file berdasarkan suara yang dipilih
+                downloadTtsBtn.classList.remove('hidden'); // Memunculkan tombol download
+
+                // Process Completed, start playing Sequence
+                document.getElementById('ttsLoading').classList.add('hidden');
+                document.getElementById('ttsIcon').classList.remove('hidden');
+                document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
+
+                // Play Ding Dong
+                const speed = parseFloat(speedSlider.value);
+                await playDingDong(speed);
+
+                // Play Generated Voice
+                document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman...';
+                
+                const audio = new Audio(audioUrl);
+                // Simple hack: use HTML5 audio playbackRate to simulate temperature/speed adjustments
+                audio.playbackRate = parseFloat(tempSlider.value); 
+                currentPlayingAudio = audio;
+                
+                await new Promise((resolve, reject) => {
+                    audio.onended = resolve;
+                    audio.onerror = reject;
+                    audio.play();
+                });
+
+            } catch (error) {
+                console.error(error);
+                alert("Terjadi kesalahan saat memproses suara. Pastikan koneksi internet stabil.");
+            } finally {
+                // Reset UI
+                generateTtsBtn.disabled = false;
+                generateTtsBtn.classList.remove('opacity-50');
+                document.getElementById('ttsIcon').classList.remove('hidden');
+                document.getElementById('ttsLoading').classList.add('hidden');
+                document.getElementById('ttsBtnText').textContent = 'Play TTS (dengan Bel)';
+                currentPlayingAudio = null;
+            }
+        });
+
+        // --- STREAMING_CHUNK:Train & Audio File Management ---
+        let trains = []; // Array of { id, name, announcements: [] }
+        const trainsContainer = document.getElementById('trainsContainer');
+        const emptyState = document.getElementById('emptyTrainState');
+        const newTrainNameInput = document.getElementById('newTrainName');
+
+        function generateId() { return Math.random().toString(36).substr(2, 9); }
+
+        document.getElementById('addTrainBtn').addEventListener('click', () => {
+            const name = newTrainNameInput.value.trim();
+            if (name) {
+                trains.push({ id: generateId(), name: name, announcements: [] });
+                newTrainNameInput.value = '';
+                renderTrains();
+            }
+        });
+
+        // Event Delegation for train dynamic DOM elements
+        trainsContainer.addEventListener('click', async (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const trainId = target.dataset.trainId;
+            const train = trains.find(t => t.id === trainId);
+            if (!train) return;
+            
+            // Add File Announcement
+            if (target.classList.contains('add-announcement-btn')) {
+                const nameInput = document.querySelector(`.announcement-name[data-train-id="${trainId}"]`);
+                const fileInput = document.querySelector(`.announcement-file[data-train-id="${trainId}"]`);
+                
+                const name = nameInput.value.trim();
+                const file = fileInput.files[0];
+
+                if (name && file) {
+                    const fileUrl = URL.createObjectURL(file);
+                    train.announcements.push({
+                        id: generateId(),
+                        name: name,
+                        fileUrl: fileUrl,
+                        fileName: file.name
+                    });
+                    renderTrains();
+                } else {
+                    // Using fallback basic alert if fields are empty
+                    alert("Harap isi nama pengumuman dan pilih file audio (.mp3, .wav)."); 
+                }
+            }
+
+            // Play File Announcement
+            if (target.classList.contains('play-audio-btn')) {
+                const annId = target.dataset.annId;
+                const ann = train.announcements.find(a => a.id === annId);
+                
+                if (ann) {
+                    const btnIcon = target.querySelector('.play-icon');
+                    const btnText = target.querySelector('.play-text');
+                    
+                    target.disabled = true;
+                    target.classList.add('opacity-75');
+                    
+                    if(singleSpeakerCheck.checked && currentPlayingAudio) {
+                        currentPlayingAudio.pause();
+                        currentPlayingAudio.currentTime = 0;
+                    }
+
+                    // 1. Play Ding Dong
+                    btnText.textContent = 'Bel...';
+                    await playDingDong(parseFloat(speedSlider.value));
+
+                    // 2. Play Uploaded File
+                    btnText.textContent = 'Memutar...';
+                    const audio = new Audio(ann.fileUrl);
+                    currentPlayingAudio = audio;
+                    audio.play();
+
+                    audio.onended = () => {
+                        btnText.textContent = 'Play';
+                        target.disabled = false;
+                        target.classList.remove('opacity-75');
+                    };
+                    audio.onerror = () => {
+                        btnText.textContent = 'Error';
+                        setTimeout(() => {
+                            btnText.textContent = 'Play';
+                            target.disabled = false;
+                            target.classList.remove('opacity-75');
+                        }, 2000);
+                    };
+                }
+            }
+            
+            // Delete Train
+            if(target.classList.contains('delete-train-btn')) {
+                trains = trains.filter(t => t.id !== trainId);
+                renderTrains();
+            }
+        });
+
+        // Render Train UI
+        function renderTrains() {
+            if (trains.length === 0) {
+                emptyState.style.display = 'block';
+                const currentCards = trainsContainer.querySelectorAll('.train-card');
+                currentCards.forEach(c => c.remove());
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            trainsContainer.innerHTML = ''; 
+
+            trains.forEach(train => {
+                const card = document.createElement('div');
+                card.className = 'train-card bg-slate-800/80 border border-slate-600 rounded-xl overflow-hidden';
+                
+                let announcementsHtml = train.announcements.length === 0 
+                    ? `<div class="text-xs text-slate-500 italic p-3 text-center bg-slate-900/50 rounded-lg border border-dashed border-slate-700">Belum ada file pengumuman.</div>`
+                    : train.announcements.map(ann => `
+                        <div class="flex items-center justify-between bg-slate-700/40 p-3 rounded-lg mb-2 border border-slate-600/50">
+                            <div class="flex flex-col overflow-hidden pr-2">
+                                <span class="text-sm font-semibold text-slate-200 truncate">${ann.name}</span>
+                                <span class="text-xs text-slate-400 truncate">${ann.fileName}</span>
+                            </div>
+                            <button data-train-id="${train.id}" data-ann-id="${ann.id}" class="play-audio-btn shrink-0 btn-press bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold shadow-md min-w-[80px] justify-center">
+                                <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69Z"></path></svg>
+                                <span class="play-text">Play</span>
+                            </button>
+                        </div>
+                    `).join('');
+
+                card.innerHTML = `
+                    <div class="bg-slate-700/50 p-4 border-b border-slate-600 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256" class="text-orange-400"><path fill="currentColor" d="M176,16H80A48.05,48.05,0,0,0,32,64v96a48.05,48.05,0,0,0,48,48v16a8,8,0,0,0,16,0V208h64v16a8,8,0,0,0,16,0V208a48.05,48.05,0,0,0,48-48V64A48.05,48.05,0,0,0,176,16ZM80,32h96a32,32,0,0,1,32,32V80H48V64A32,32,0,0,1,80,32Z"></path></svg>
+                            <h3 class="font-bold text-slate-100 uppercase tracking-wide">KA ${train.name}</h3>
+                        </div>
+                        <button data-train-id="${train.id}" class="delete-train-btn text-slate-400 hover:text-red-400 p-1 bg-slate-800 rounded-md transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256" class="pointer-events-none"><path fill="currentColor" d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-800/40">
+                        <div class="flex flex-col xl:flex-row gap-2 mb-4 bg-slate-900/80 p-3 rounded-lg border border-slate-700 items-start xl:items-center">
+                            <input type="text" data-train-id="${train.id}" class="announcement-name w-full xl:w-1/3 input-field rounded-md px-3 py-2 text-xs font-medium" placeholder="Nama Menu (Cth: Kedatangan)">
+                            <input type="file" data-train-id="${train.id}" accept=".mp3, .wav, audio/*" class="announcement-file w-full xl:w-auto flex-grow text-xs text-slate-400 file:cursor-pointer file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600">
+                            <button data-train-id="${train.id}" class="add-announcement-btn w-full xl:w-auto shrink-0 bg-slate-600 hover:bg-slate-500 text-white px-3 py-2 rounded-md text-xs font-bold transition-colors">
+                                + Tambah Ke Menu
+                            </button>
+                        </div>
+
+                        <!-- Audio List -->
+                        <div class="space-y-2">
+                            ${announcementsHtml}
+                        </div>
+                    </div>
+                `;
+                trainsContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
