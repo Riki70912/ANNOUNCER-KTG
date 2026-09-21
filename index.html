@@ -122,7 +122,16 @@
                             <option value="Fenrir" class="text-slate-300">Fenrir — Suara Bersemangat & Lantang (Pemberitahuan Cepat)</option>
                             <option value="Charon" class="text-slate-300">Charon — Suara Pria Dalam & Berwibawa (Alternatif)</option>
                         </select>
-                        <p class="text-xs text-slate-400 mt-1">Pilihan suara tersinkron penuh dengan Gemini AI TTS & pemutaran audio stasiun.</p>
+                        <div class="mt-2">
+                        <details class="text-xs text-slate-400">
+                            <summary class="cursor-pointer hover:text-slate-300">Pengaturan API Key GitHub Pages (Opsional)</summary>
+                            <div class="mt-2 flex gap-2">
+                                <input type="password" id="apiKeyInput" placeholder="Masukkan Gemini API Key..." class="w-full input-field rounded-lg px-2 py-1 text-xs text-slate-200">
+                                <button type="button" id="saveApiKeyBtn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium">Simpan</button>
+                            </div>
+                        </details>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">Pilihan suara tersinkron penuh dengan Gemini AI TTS & pemutaran audio stasiun.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -416,15 +425,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 console.warn("Server TTS proxy not available (static host / GitHub Pages), trying client-side API key...");
             }
 
-            // 2. If server proxy failed (e.g. on GitHub Pages static host), check/prompt for API key
+            // 2. If server proxy failed (e.g. on GitHub Pages static host), check for API key
             let apiKey = localStorage.getItem('gemini_api_key');
             if (!apiKey) {
-                apiKey = prompt("Masukkan Gemini API Key Anda untuk mengaktifkan Suara AI (Gemini TTS) di GitHub Pages / Static Hosting:");
-                if (apiKey) {
-                    localStorage.setItem('gemini_api_key', apiKey.trim());
-                } else {
-                    throw new Error("Gemini API Key diperlukan untuk suara AI di GitHub Pages.");
-                }
+                return null; // Return null to automatically fallback to browser speech synthesis without prompting
             }
 
             // 3. Call Gemini API from client (Direct or via CORS Proxy for GitHub Pages)
