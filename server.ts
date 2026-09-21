@@ -52,12 +52,12 @@ app.post("/api/tts", async (req, res) => {
   }
 });
 
-// Serve static files from root
-const staticPath = __dirname;
+// Serve static files from workspace root
+const staticPath = process.cwd();
 app.use(express.static(staticPath));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(staticPath, "announcer_di_stasiun_ketapang.html"));
+  res.sendFile(path.join(staticPath, "index.html"));
 });
 
 app.listen(PORT, "0.0.0.0", () => {
