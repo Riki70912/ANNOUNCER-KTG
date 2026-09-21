@@ -517,12 +517,16 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         }
 
         let isTtsPlaying = false;
+        let currentBrowserUtterance = null;
 
         pauseTtsBtn.addEventListener('click', () => {
             if (currentPlayingAudio) {
                 currentPlayingAudio.pause();
                 currentPlayingAudio.currentTime = 0;
                 currentPlayingAudio = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
             resetTtsPlayState();
         });
@@ -548,14 +552,12 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             const text = ttsText.value.trim();
             if (!text) return;
 
-            if (!localStorage.getItem('gemini_api_key')) {
-                apiKeyModal.classList.remove('hidden');
-                return;
-            }
-
             if (singleSpeakerCheck.checked && currentPlayingAudio) {
                 currentPlayingAudio.pause();
                 currentPlayingAudio.currentTime = 0;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
 
             isTtsPlaying = true;
@@ -564,39 +566,71 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             downloadTtsBtn.classList.add('hidden');
             document.getElementById('ttsIcon').classList.add('hidden');
             document.getElementById('ttsLoading').classList.remove('hidden');
-            document.getElementById('ttsBtnText').textContent = 'Memproses Suara AI...';
+            document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
             pauseTtsBtn.classList.remove('hidden');
 
             try {
-                const voice = voiceSelect.value;
-                const audioUrl = await fetchGeminiTTS(text, voice);
-                
-                if (!isTtsPlaying) return;
-
-                downloadTtsBtn.href = audioUrl;
-                downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`;
-                downloadTtsBtn.classList.remove('hidden');
-
-                document.getElementById('ttsLoading').classList.add('hidden');
-                document.getElementById('ttsIcon').classList.remove('hidden');
-                document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
-
                 const speed = parseFloat(speedSlider.value);
                 await playDingDong(speed);
 
                 if (!isTtsPlaying) return;
 
+                document.getElementById('ttsLoading').classList.add('hidden');
+                document.getElementById('ttsIcon').classList.remove('hidden');
                 document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
-                
-                const audio = new Audio(audioUrl);
-                audio.playbackRate = parseFloat(tempSlider.value); 
-                currentPlayingAudio = audio;
-                
-                await new Promise((resolve, reject) => {
-                    audio.onended = resolve;
-                    audio.onerror = reject;
-                    audio.play();
-                });
+
+                const apiKey = localStorage.getItem('gemini_api_key');
+                let audioUrl = null;
+
+                if (apiKey) {
+                    try {
+                        const voice = voiceSelect.value;
+                        audioUrl = await fetchGeminiTTS(text, voice);
+                    } catch (apiErr) {
+                        console.warn("Gemini API TTS failed or unconfigured, falling back to Browser SpeechSynthesis:", apiErr);
+                    }
+                }
+
+                if (audioUrl) {
+                    downloadTtsBtn.href = audioUrl;
+                    downloadTtsBtn.download = `Pengumuman_TTS.wav`;
+                    downloadTtsBtn.classList.remove('hidden');
+
+                    const audio = new Audio(audioUrl);
+                    audio.playbackRate = parseFloat(tempSlider.value);
+                    currentPlayingAudio = audio;
+
+                    await new Promise((resolve, reject) => {
+                        audio.onended = resolve;
+                        audio.onerror = reject;
+                        audio.play();
+                    });
+                } else {
+                    // Fallback to browser native SpeechSynthesis (Works 100% without API key!)
+                    await new Promise((resolve, reject) => {
+                        if (!('speechSynthesis' in window)) {
+                            reject(new Error('Browser Speech Synthesis tidak didukung.'));
+                            return;
+                        }
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.rate = parseFloat(tempSlider.value);
+                        utterance.pitch = 1.0;
+                        
+                        const voices = window.speechSynthesis.getVoices();
+                        const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
+                        if (idVoice) {
+                            utterance.voice = idVoice;
+                        } else {
+                            utterance.lang = 'id-ID';
+                        }
+
+                        utterance.onend = resolve;
+                        utterance.onerror = (e) => reject(e);
+                        
+                        currentBrowserUtterance = utterance;
+                        window.speechSynthesis.speak(utterance);
+                    });
+                }
 
             } catch (error) {
                 console.error(error);
