@@ -1079,7 +1079,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             loadDriveFiles();
         }
 
-        // Firebase Auth & Firestore Integration
+    </script>
+
+    <!-- Firebase Auth & Firestore Integration -->
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1092,7 +1095,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const firebaseConfig = await cfgRes.json();
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                db = getFirestore(app);
+                db = firebaseConfig.firestoreDatabaseId ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : getFirestore(app);
 
                 onAuthStateChanged(auth, (user) => {
                     currentUser = user;
@@ -1159,7 +1162,8 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     alert('Silakan buat akun / masuk terlebih dahulu.');
                     return;
                 }
-                const textVal = ttsText.value;
+                const ttsText = document.getElementById('ttsText');
+                const textVal = ttsText ? ttsText.value : '';
                 if (!textVal) {
                     alert('Tidak ada teks untuk disimpan.');
                     return;
