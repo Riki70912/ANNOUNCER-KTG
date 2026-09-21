@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANNOUNCER DI STASIUN KETAPANG</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
@@ -74,10 +75,14 @@
                     <p class="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">Sistem Pengumuman Terpadu</p>
                 </div>
             </div>
-            <div>
+            <div class="flex items-center gap-2">
+                <button id="gdriveAuthBtn" class="btn-press bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M78.33,176H32a8,8,0,0,1-7.14-11.6l48-96A8,8,0,0,1,80,64h46.33L78.33,176ZM224,192H103.67l32-64H224a8,8,0,0,1,7.14,11.6l-48,96A8,8,0,0,1,176,240H129.67l48-96H224a8,8,0,0,1,0,16Zm-96-32L80,64H176l48,96Z"></path></svg>
+                    <span id="gdriveBtnText">Hubungkan Google Drive</span>
+                </button>
                 <button id="apiKeyBtn" class="btn-press bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,48H32a8,8,0,0,0-8,8V192a8,8,0,0,0,8,8H224a8,8,0,0,0,8-8V56A8,8,0,0,0,224,48Zm-8,136H40V64H216ZM112,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Z"></path></svg>
-                    API Key (GitHub Pages)
+                    API Key
                 </button>
             </div>
         </div>
@@ -177,7 +182,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-700/50 pb-4">
                     <div class="flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-green-400"><path fill="currentColor" d="M240,192h-8V96a16,16,0,0,0-16-16H40A16,16,0,0,0,24,96v96H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,96H216v96H40Zm8,24h64a8,8,0,0,1,0,16H48a8,8,0,0,1,0-16Zm96,0h48a8,8,0,0,1,0,16H144a8,8,0,0,1,0-16Z"></path></svg>
-                        <h2 class="text-lg font-semibold text-slate-100">Manajemen File Audio Kereta</h2>
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-100">Manajemen File Audio Kereta</h2>
+                            <p class="text-xs text-slate-400" id="gdriveStatusText">Tersimpan lokal & otomatis sinkron Google Drive</p>
+                        </div>
                     </div>
                     
                     <div class="flex items-center gap-2">
@@ -221,6 +229,100 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
     </div>
 
     <script>
+        // --- Google Drive OAuth & Upload Integration ---
+        let tokenClient;
+        let gDriveAccessToken = localStorage.getItem('gdrive_access_token');
+        const gdriveAuthBtn = document.getElementById('gdriveAuthBtn');
+        const gdriveBtnText = document.getElementById('gdriveBtnText');
+        const gdriveStatusText = document.getElementById('gdriveStatusText');
+
+        function updateDriveUI() {
+            if (gDriveAccessToken) {
+                gdriveBtnText.textContent = 'Google Drive Terhubung ✓';
+                gdriveAuthBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+                gdriveAuthBtn.classList.add('bg-green-600', 'hover:bg-green-500');
+                gdriveStatusText.textContent = 'Terhubung ke Google Drive (Audio tersimpan aman)';
+            } else {
+                gdriveBtnText.textContent = 'Hubungkan Google Drive';
+                gdriveAuthBtn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                gdriveAuthBtn.classList.add('bg-blue-600', 'hover:bg-blue-500');
+                gdriveStatusText.textContent = 'Tersimpan lokal (Hubungkan GDrive untuk simpan cloud)';
+            }
+        }
+        updateDriveUI();
+
+        window.onload = () => {
+            if (window.google && google.accounts) {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: '730712757287-730712757287.apps.googleusercontent.com',
+                    scope: 'https://www.googleapis.com/auth/drive.file',
+                    callback: (response) => {
+                        if (response.access_token) {
+                            gDriveAccessToken = response.access_token;
+                            localStorage.setItem('gdrive_access_token', gDriveAccessToken);
+                            updateDriveUI();
+                            alert('Berhasil terhubung ke Google Drive!');
+                        }
+                    }
+                });
+            }
+        };
+
+        gdriveAuthBtn.addEventListener('click', () => {
+            if (tokenClient) {
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            } else {
+                // Try initializing if loaded late
+                if (window.google && google.accounts) {
+                    tokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: '730712757287-730712757287.apps.googleusercontent.com',
+                        scope: 'https://www.googleapis.com/auth/drive.file',
+                        callback: (response) => {
+                            if (response.access_token) {
+                                gDriveAccessToken = response.access_token;
+                                localStorage.setItem('gdrive_access_token', gDriveAccessToken);
+                                updateDriveUI();
+                                alert('Berhasil terhubung ke Google Drive!');
+                            }
+                        }
+                    });
+                    tokenClient.requestAccessToken({ prompt: 'consent' });
+                } else {
+                    alert('Gagal memuat Google Identity Services. Pastikan koneksi internet stabil.');
+                }
+            }
+        });
+
+        async function uploadFileToGoogleDrive(file, fileName) {
+            if (!gDriveAccessToken) return null;
+            try {
+                const metadata = {
+                    name: `AnnouncerKetapang_${Date.now()}_${fileName}`,
+                    mimeType: file.type || 'audio/mp3'
+                };
+
+                const form = new FormData();
+                form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                form.append('file', file);
+
+                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: new Headers({ 'Authorization': 'Bearer ' + gDriveAccessToken }),
+                    body: form
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.id;
+                } else {
+                    console.error('Drive upload failed:', await res.text());
+                }
+            } catch (err) {
+                console.error('Google Drive Upload Error:', err);
+            }
+            return null;
+        }
+
         // --- API Key Modal Controls ---
         const apiKeyBtn = document.getElementById('apiKeyBtn');
         const apiKeyModal = document.getElementById('apiKeyModal');
@@ -380,7 +482,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     throw new Error('Server proxy not available');
                 }
             } catch (err) {
-                // Fallback for GitHub Pages / static hosting
+                // Fallback for GitHub Pages / static hosting using gemini-2.5-flash
                 let apiKey = localStorage.getItem('gemini_api_key');
                 if (!apiKey) {
                     apiKey = prompt("Masukkan Google Gemini API Key Anda untuk digunakan di GitHub Pages:");
@@ -401,9 +503,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                             }
                         }
                     },
-                    model: "gemini-2.5-flash-preview-tts"
+                    model: "gemini-2.5-flash"
                 };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
                 const directResp = await fetch(apiUrl, {
                     method: 'POST',
@@ -411,7 +513,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     body: JSON.stringify(payload)
                 });
 
-                if (!directResp.ok) throw new Error('Direct Gemini TTS API Failed');
+                if (!directResp.ok) {
+                    const errText = await directResp.text();
+                    throw new Error(errText || 'Direct Gemini TTS API Failed');
+                }
                 resultData = await directResp.json();
             }
 
@@ -433,7 +538,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const wavBlob = pcmToWav(pcm16, sampleRate);
                 return URL.createObjectURL(wavBlob);
             }
-            throw new Error('Invalid audio data from API');
+            throw new Error('Invalid audio data from API response');
         }
 
         let isTtsPlaying = false;
@@ -455,7 +560,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             document.getElementById('ttsLoading').classList.add('hidden');
             document.getElementById('ttsBtnText').textContent = 'Play TTS (dengan Bel)';
             pauseTtsBtn.classList.add('hidden');
-            // Also reset train buttons
             document.querySelectorAll('.play-audio-btn').forEach(b => {
                 b.dataset.isPlaying = 'false';
                 const t = b.querySelector('.play-text');
@@ -487,7 +591,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const voice = voiceSelect.value;
                 const audioUrl = await fetchGeminiTTS(text, voice);
                 
-                if (!isTtsPlaying) return; // Cancelled during fetch
+                if (!isTtsPlaying) return;
 
                 downloadTtsBtn.href = audioUrl;
                 downloadTtsBtn.download = `Pengumuman_TTS_${voice}.wav`;
@@ -500,7 +604,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const speed = parseFloat(speedSlider.value);
                 await playDingDong(speed);
 
-                if (!isTtsPlaying) return; // Cancelled during chime
+                if (!isTtsPlaying) return;
 
                 document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
                 
@@ -523,10 +627,28 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         });
 
-        let trains = [];
+        // --- Trains & Persistent Storage (localStorage + Google Drive) ---
+        let trains = JSON.parse(localStorage.getItem('ketapang_trains') || '[]');
         const trainsContainer = document.getElementById('trainsContainer');
         const emptyState = document.getElementById('emptyTrainState');
         const newTrainNameInput = document.getElementById('newTrainName');
+
+        function saveTrainsToStorage() {
+            // Save metadata to localStorage so names persist on refresh
+            const storableTrains = trains.map(t => ({
+                id: t.id,
+                name: t.name,
+                announcements: t.announcements.map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    fileName: a.fileName,
+                    gdriveId: a.gdriveId || null
+                }))
+            }));
+            localStorage.setItem('ketapang_trains', JSON.stringify(storableTrains));
+        }
+
+        renderTrains();
 
         function generateId() { return Math.random().toString(36).substr(2, 9); }
 
@@ -535,6 +657,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             if (name) {
                 trains.push({ id: generateId(), name: name, announcements: [] });
                 newTrainNameInput.value = '';
+                saveTrainsToStorage();
                 renderTrains();
             }
         });
@@ -555,14 +678,26 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 const file = fileInput.files[0];
 
                 if (name && file) {
+                    target.disabled = true;
+                    target.textContent = 'Menyimpan...';
+
+                    let gdriveId = null;
+                    if (gDriveAccessToken) {
+                        gdriveId = await uploadFileToGoogleDrive(file, file.name);
+                    }
+
                     const fileUrl = URL.createObjectURL(file);
                     train.announcements.push({
                         id: generateId(),
                         name: name,
                         fileUrl: fileUrl,
-                        fileName: file.name
+                        fileName: file.name,
+                        gdriveId: gdriveId
                     });
+
+                    saveTrainsToStorage();
                     renderTrains();
+                    target.disabled = false;
                 } else {
                     alert("Harap isi nama pengumuman dan pilih file audio (.mp3, .wav)."); 
                 }
@@ -575,7 +710,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 if (ann) {
                     const btnText = target.querySelector('.play-text');
                     
-                    // If already playing this file, pause/stop it
                     if (currentPlayingAudio && target.dataset.isPlaying === 'true') {
                         currentPlayingAudio.pause();
                         currentPlayingAudio.currentTime = 0;
@@ -588,7 +722,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         return;
                     }
 
-                    // Stop any active audio
                     if (currentPlayingAudio) {
                         currentPlayingAudio.pause();
                         currentPlayingAudio.currentTime = 0;
@@ -636,6 +769,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             
             if(target.classList.contains('delete-train-btn')) {
                 trains = trains.filter(t => t.id !== trainId);
+                saveTrainsToStorage();
                 renderTrains();
             }
         });
@@ -661,7 +795,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         <div class="flex items-center justify-between bg-slate-700/40 p-3 rounded-lg mb-2 border border-slate-600/50">
                             <div class="flex flex-col overflow-hidden pr-2">
                                 <span class="text-sm font-semibold text-slate-200 truncate">${ann.name}</span>
-                                <span class="text-xs text-slate-400 truncate">${ann.fileName}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-slate-400 truncate">${ann.fileName}</span>
+                                    ${ann.gdriveId ? '<span class="text-[10px] bg-green-900/60 text-green-300 px-1.5 py-0.5 rounded">GDrive ✓</span>' : ''}
+                                </div>
                             </div>
                             <button data-train-id="${train.id}" data-ann-id="${ann.id}" data-is-playing="false" class="play-audio-btn shrink-0 btn-press bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold shadow-md min-w-[85px] justify-center transition-colors">
                                 <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69Z"></path></svg>
