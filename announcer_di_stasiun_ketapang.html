@@ -1078,13 +1078,25 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                                 if (cont) cont.classList.remove('hidden');
                                 loadDriveFiles();
                             } else if (response && response.error) {
-                                console.error('OAuth token error:', response);
+                                if (response.error === 'access_denied' || response.error === 'popup_closed_by_user') {
+                                    console.log('Permintaan otorisasi Google Drive dibatalkan pengguna.');
+                                    return;
+                                }
+                                console.warn('OAuth token notice:', response);
                                 alert(`Gagal menghubungkan Google Drive: ${response.error_description || response.error}\n\nJika menggunakan GitHub Pages, pastikan URL origin (https://${window.location.hostname}) telah didaftarkan pada Authorized JavaScript Origins di Google Cloud Console.`);
                             }
                         },
                         error_callback: (err) => {
-                            console.error('OAuth error callback:', err);
-                            alert(`Error OAuth Google: ${err.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
+                            if (err && (err.type === 'popup_closed' || (err.message && err.message.toLowerCase().includes('closed')))) {
+                                console.log('Popup otentikasi Google Drive ditutup.');
+                                return;
+                            }
+                            if (err && err.type === 'popup_failed_to_open') {
+                                alert('Popup Google diblokir oleh browser. Mohon izinkan pop-up (Allow popups) untuk situs ini di peramban Anda.');
+                                return;
+                            }
+                            console.warn('OAuth error notice:', err);
+                            alert(`Error OAuth Google: ${err?.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
                         }
                     });
                 } catch (err) {

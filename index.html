@@ -125,16 +125,28 @@
                 
                 <div class="space-y-4 flex-grow flex flex-col">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara AI (Announcer Wanita Stasiun)</label>
-                        <select id="voiceSelect" class="w-full input-field rounded-lg p-2.5 text-sm text-slate-200 font-medium">
-                            <option value="Sulafat" selected>Sulafat — Suara Wanita Utama & Natural (Rekomendasi Utama Stasiun)</option>
-                            <option value="Aoede" class="text-slate-300">Aoede — Suara Wanita Formal, Anggun & Berwibawa</option>
-                            <option value="Zephyr" class="text-slate-300">Zephyr — Suara Wanita Cerah, Jernih & Dinamis (Informasi)</option>
-                            <option value="Kore" class="text-slate-300">Kore — Suara Wanita Tegas, Formal & Profesional</option>
-                            <option value="Puck" class="text-slate-300">Puck — Suara Wanita Ramah & Hangat (Suasana Stasiun)</option>
-                            <option value="Fenrir" class="text-slate-300">Fenrir — Suara Bersemangat & Lantang (Pemberitahuan Cepat)</option>
-                            <option value="Charon" class="text-slate-300">Charon — Suara Pria Dalam & Berwibawa (Alternatif)</option>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara Announcer Stasiun</label>
+                        <select id="voiceSelect" class="w-full input-field rounded-lg p-2.5 text-sm text-slate-200 font-medium bg-slate-800 border border-slate-700">
+                            <optgroup label="✨ Karakter Suara AI Gemini / Studio Master">
+                                <option value="Sulafat" selected>Sulafat — Wanita Utama & Natural (Standar Resmi Stasiun)</option>
+                                <option value="Aoede">Aoede — Wanita Formal & Anggun (Tempo Khidmat & Wibawa)</option>
+                                <option value="Zephyr">Zephyr — Wanita Cerah & Jernih (Informasi Cepat / Sopran)</option>
+                                <option value="Kore">Kore — Wanita Tegas & Profesional (Instruksi Keamanan)</option>
+                                <option value="Puck">Puck — Wanita Ramah & Hangat (Suasana & Salam Penumpang)</option>
+                                <option value="Fenrir">Fenrir — Pria Lantang & Bersemangat (Keberangkatan / Tenor)</option>
+                                <option value="Charon">Charon — Pria Dalam & Berwibawa (Pemberitahuan Penting / Bariton)</option>
+                            </optgroup>
+                            <optgroup id="browserVoicesGroup" label="💻 Suara Sistem / Browser Perangkat">
+                                <!-- Populated dynamically from device voices -->
+                            </optgroup>
                         </select>
+                        <div id="activeVoiceBadge" class="mt-2 flex items-center justify-between text-xs text-orange-400 bg-orange-950/30 border border-orange-800/40 rounded-lg px-2.5 py-1.5">
+                            <span class="flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 256 256" fill="currentColor"><path d="M160,32V224a8,8,0,0,1-12.91,6.31L78.29,176H32a16,16,0,0,1-16-16V96A16,16,0,0,1,32,80H78.29l68.8-54.31A8,8,0,0,1,160,32Zm32,64a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V104A8,8,0,0,0,192,96Zm32-16a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V88A8,8,0,0,0,224,80Z"></path></svg>
+                                <span>Karakter Aktif:</span>
+                            </span>
+                            <span id="activeVoiceName" class="font-bold text-orange-300">Sulafat (Wanita • Natural Standar)</span>
+                        </div>
                         <div class="mt-2">
                         <details class="text-xs text-slate-400">
                             <summary class="cursor-pointer hover:text-slate-300">Pengaturan API Key GitHub Pages (Opsional)</summary>
@@ -144,7 +156,7 @@
                             </div>
                         </details>
                     </div>
-                    <p class="text-xs text-slate-400 mt-1">Pilihan suara tersinkron penuh dengan Gemini AI TTS & pemutaran audio stasiun.</p>
+                    <p class="text-xs text-slate-400 mt-1">Setiap opsi karakter suara dikonfigurasi dengan akustik, timbre, dan artikulasi stasiun yang berbeda.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -414,14 +426,116 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             });
         });
 
+        const VOICE_PROFILES = {
+            'Sulafat': { 
+                name: 'Sulafat',
+                gender: 'female', 
+                pitch: 1.0, 
+                rate: 1.0, 
+                desc: 'Wanita Utama & Natural (Standar Stasiun)',
+                badge: 'Wanita • Natural'
+            },
+            'Aoede': { 
+                name: 'Aoede',
+                gender: 'female', 
+                pitch: 0.88, 
+                rate: 0.92, 
+                desc: 'Wanita Formal & Anggun (Tempo Khidmat)',
+                badge: 'Wanita • Formal Alto'
+            },
+            'Zephyr': { 
+                name: 'Zephyr',
+                gender: 'female', 
+                pitch: 1.25, 
+                rate: 1.05, 
+                desc: 'Wanita Cerah & Jernih (Informasi Cepat)',
+                badge: 'Wanita • Cerah Sopran'
+            },
+            'Kore': { 
+                name: 'Kore',
+                gender: 'female', 
+                pitch: 0.95, 
+                rate: 0.98, 
+                desc: 'Wanita Tegas & Profesional',
+                badge: 'Wanita • Tegas'
+            },
+            'Puck': { 
+                name: 'Puck',
+                gender: 'female', 
+                pitch: 1.10, 
+                rate: 1.02, 
+                desc: 'Wanita Ramah & Hangat',
+                badge: 'Wanita • Ramah'
+            },
+            'Fenrir': { 
+                name: 'Fenrir',
+                gender: 'male', 
+                pitch: 0.82, 
+                rate: 1.12, 
+                desc: 'Pria Lantang & Bersemangat (Tenor)',
+                badge: 'Pria • Lantang'
+            },
+            'Charon': { 
+                name: 'Charon',
+                gender: 'male', 
+                pitch: 0.68, 
+                rate: 0.90, 
+                desc: 'Pria Dalam & Berwibawa (Bariton)',
+                badge: 'Pria • Bariton Dalam'
+            }
+        };
+
         const voiceSelect = document.getElementById('voiceSelect');
         const savedVoice = localStorage.getItem('selected_voice_name');
-        if (savedVoice) {
+        if (savedVoice && voiceSelect) {
             voiceSelect.value = savedVoice;
         }
-        voiceSelect.addEventListener('change', (e) => {
-            localStorage.setItem('selected_voice_name', e.target.value);
-        });
+
+        function updateVoiceBadge(val) {
+            const badgeEl = document.getElementById('activeVoiceName');
+            if (!badgeEl) return;
+            if (val.startsWith('sys:')) {
+                badgeEl.textContent = val.replace('sys:', '').substring(0, 32);
+            } else if (VOICE_PROFILES[val]) {
+                badgeEl.textContent = `${VOICE_PROFILES[val].name} (${VOICE_PROFILES[val].badge})`;
+            }
+        }
+
+        function populateBrowserVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return;
+            const group = document.getElementById('browserVoicesGroup');
+            if (!group) return;
+            group.innerHTML = '';
+            
+            const idVoices = voices.filter(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
+            const otherVoices = voices.filter(v => !v.lang.startsWith('id') && !v.lang.startsWith('in'));
+            
+            [...idVoices, ...otherVoices.slice(0, 8)].forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = 'sys:' + v.name;
+                const isIndo = v.lang.startsWith('id') || v.lang.startsWith('in');
+                opt.textContent = `${v.name} (${v.lang})${isIndo ? ' ⭐ Bahasa Indonesia' : ''}`;
+                group.appendChild(opt);
+            });
+            if (savedVoice && voiceSelect) {
+                voiceSelect.value = savedVoice;
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = populateBrowserVoices;
+            setTimeout(populateBrowserVoices, 300);
+        }
+
+        if (voiceSelect) {
+            updateVoiceBadge(voiceSelect.value);
+            voiceSelect.addEventListener('change', (e) => {
+                localStorage.setItem('selected_voice_name', e.target.value);
+                updateVoiceBadge(e.target.value);
+            });
+        }
 
         const apiKeyInput = document.getElementById('apiKeyInput');
         const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
@@ -453,12 +567,16 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         const ttsDownloadOptions = document.getElementById('ttsDownloadOptions');
         
         let currentPlayingAudio = null;
+        let ttsAudioContext = null;
 
         tempSlider.addEventListener('input', (e) => {
             tempDisplay.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
         async function convertWavBlobToMp3Blob(wavBlob) {
+            if (wavBlob.type.includes('mp3') || wavBlob.type.includes('mpeg')) {
+                return wavBlob;
+            }
             if (typeof lamejs === 'undefined' || !lamejs.Mp3Encoder) {
                 throw new Error('Encoder MP3 (lamejs) belum termuat. Mohon periksa koneksi internet atau refresh halaman.');
             }
@@ -549,18 +667,27 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         function parseAudioFromResponse(resultData) {
             const part = resultData?.candidates?.[0]?.content?.parts?.[0];
             const audioData = part?.inlineData?.data;
-            const mimeType = part?.inlineData?.mimeType;
+            const mimeType = part?.inlineData?.mimeType || '';
 
-            if (audioData && mimeType && mimeType.startsWith("audio/")) {
-                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
-                
+            if (audioData && (mimeType.startsWith("audio/") || mimeType === '')) {
                 const binaryString = atob(audioData);
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                
+
+                if (mimeType.includes("mp3") || mimeType.includes("mpeg")) {
+                    const mp3Blob = new Blob([bytes], { type: 'audio/mp3' });
+                    return URL.createObjectURL(mp3Blob);
+                }
+                if (mimeType.includes("wav")) {
+                    const wavBlob = new Blob([bytes], { type: 'audio/wav' });
+                    return URL.createObjectURL(wavBlob);
+                }
+
+                // Default: Raw PCM16 (e.g. from Gemini audio/l16)
+                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
                 const pcm16 = new Int16Array(bytes.buffer);
                 const wavBlob = pcmToWav(pcm16, sampleRate);
                 return URL.createObjectURL(wavBlob);
@@ -672,6 +799,143 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             });
         }
 
+        async function playAnnouncerAudio(audioUrl, voiceKey) {
+            const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
+            const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
+            
+            const audio = new Audio();
+            audio.src = audioUrl;
+            audio.crossOrigin = "anonymous";
+            audio.playbackRate = Math.max(0.7, Math.min(1.4, userSpeed * profile.rate));
+            currentPlayingAudio = audio;
+
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!ttsAudioContext || ttsAudioContext.state === 'closed') {
+                    ttsAudioContext = new AudioContextClass();
+                }
+                if (ttsAudioContext.state === 'suspended') {
+                    await ttsAudioContext.resume();
+                }
+
+                const source = ttsAudioContext.createMediaElementSource(audio);
+                const lowFilter = ttsAudioContext.createBiquadFilter();
+                const highFilter = ttsAudioContext.createBiquadFilter();
+
+                if (profile.gender === 'male') {
+                    // Deep male voice boost (boost 220Hz bass, soften high trebles)
+                    lowFilter.type = 'lowshelf';
+                    lowFilter.frequency.value = 220;
+                    lowFilter.gain.value = voiceKey === 'Charon' ? 8.0 : 4.5;
+
+                    highFilter.type = 'highshelf';
+                    highFilter.frequency.value = 3200;
+                    highFilter.gain.value = voiceKey === 'Charon' ? -4.0 : -1.0;
+                } else if (voiceKey === 'Zephyr') {
+                    // Bright, clear high female tone
+                    lowFilter.type = 'highpass';
+                    lowFilter.frequency.value = 140;
+                    highFilter.type = 'highshelf';
+                    highFilter.frequency.value = 3200;
+                    highFilter.gain.value = 5.0;
+                } else if (voiceKey === 'Aoede') {
+                    // Formal, dignified female tone
+                    lowFilter.type = 'peaking';
+                    lowFilter.frequency.value = 650;
+                    lowFilter.gain.value = 3.5;
+                    highFilter.type = 'highshelf';
+                    highFilter.frequency.value = 4000;
+                    highFilter.gain.value = -1.5;
+                } else {
+                    lowFilter.type = 'allpass';
+                    highFilter.type = 'allpass';
+                }
+
+                source.connect(lowFilter);
+                lowFilter.connect(highFilter);
+                highFilter.connect(ttsAudioContext.destination);
+            } catch (webAudioErr) {
+                // AudioContext fallback
+            }
+
+            await new Promise((resolve, reject) => {
+                audio.onended = resolve;
+                audio.onerror = reject;
+                audio.play().catch(reject);
+            });
+        }
+
+        async function playSpeechSynthesisUtterance(text, voiceKey) {
+            return new Promise((resolve, reject) => {
+                if (!('speechSynthesis' in window)) {
+                    reject(new Error('Browser Speech Synthesis tidak didukung pada perangkat ini.'));
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
+                const allVoices = window.speechSynthesis.getVoices();
+
+                if (voiceKey && voiceKey.startsWith('sys:')) {
+                    const rawName = voiceKey.replace('sys:', '');
+                    const sysVoice = allVoices.find(v => v.name === rawName || v.voiceURI === rawName);
+                    if (sysVoice) {
+                        utterance.voice = sysVoice;
+                        utterance.lang = sysVoice.lang;
+                    }
+                    utterance.rate = userSpeed;
+                    utterance.pitch = 1.0;
+                } else {
+                    const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
+                    utterance.rate = Math.max(0.6, Math.min(1.5, userSpeed * profile.rate));
+                    utterance.pitch = profile.pitch;
+
+                    const idVoices = allVoices.filter(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
+                    const pool = idVoices.length > 0 ? idVoices : allVoices;
+
+                    let matchedVoice = null;
+
+                    // Match gender-specific Indonesian voice
+                    if (profile.gender === 'male') {
+                        matchedVoice = pool.find(v => {
+                            const n = v.name.toLowerCase();
+                            return n.includes('male') || n.includes('pria') || n.includes('andika') || n.includes('david') || n.includes('standard-b') || n.includes('wavenet-b');
+                        });
+                    } else {
+                        matchedVoice = pool.find(v => {
+                            const n = v.name.toLowerCase();
+                            return n.includes('female') || n.includes('wanita') || n.includes('gadis') || n.includes('damayanti') || n.includes('standard-a') || n.includes('wavenet-a');
+                        });
+                    }
+
+                    if (!matchedVoice && idVoices.length > 0) {
+                        matchedVoice = idVoices[0];
+                    }
+
+                    if (matchedVoice) {
+                        utterance.voice = matchedVoice;
+                        utterance.lang = matchedVoice.lang;
+                    } else {
+                        utterance.lang = 'id-ID';
+                    }
+                }
+
+                utterance.onend = () => {
+                    currentBrowserUtterance = null;
+                    resolve();
+                };
+                utterance.onerror = (e) => {
+                    currentBrowserUtterance = null;
+                    reject(e);
+                };
+
+                currentBrowserUtterance = utterance;
+                window.speechSynthesis.speak(utterance);
+            });
+        }
+
         generateTtsBtn.addEventListener('click', async () => {
             const text = ttsText.value.trim();
             if (!text) return;
@@ -704,9 +968,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
 
                 let audioUrl = null;
+                const chosenVoice = voiceSelect ? voiceSelect.value : 'Sulafat';
                 try {
-                    const voice = voiceSelect.value;
-                    audioUrl = await fetchGeminiTTS(text, voice);
+                    audioUrl = await fetchGeminiTTS(text, chosenVoice);
                 } catch (apiErr) {
                     console.warn("Gemini API TTS failed, falling back to Browser SpeechSynthesis:", apiErr);
                 }
@@ -723,53 +987,17 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                     if (downloadTtsBtn) {
                         downloadTtsBtn.href = audioUrl;
-                        downloadTtsBtn.download = `Pengumuman_TTS_${Date.now()}.wav`;
+                        const ext = currentGeneratedBlob?.type?.includes('mp3') ? 'mp3' : 'wav';
+                        downloadTtsBtn.download = `Pengumuman_TTS_${Date.now()}.${ext}`;
                     }
                     if (ttsDownloadOptions) {
                         ttsDownloadOptions.classList.remove('hidden');
                     }
 
-                    const audio = new Audio(audioUrl);
-                    audio.playbackRate = parseFloat(tempSlider.value);
-                    currentPlayingAudio = audio;
-
-                    await new Promise((resolve, reject) => {
-                        audio.onended = resolve;
-                        audio.onerror = reject;
-                        audio.play();
-                    });
+                    await playAnnouncerAudio(audioUrl, chosenVoice);
                 } else {
-                    // Fallback to browser native SpeechSynthesis (Works 100% without API key!)
-                    await new Promise((resolve, reject) => {
-                        if (!('speechSynthesis' in window)) {
-                            reject(new Error('Browser Speech Synthesis tidak didukung.'));
-                            return;
-                        }
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.rate = parseFloat(tempSlider.value);
-                        utterance.pitch = 1.0;
-                        
-                        const voices = window.speechSynthesis.getVoices();
-                        const selectedVoiceName = voiceSelect.value;
-                        let targetVoice = voices.find(v => v.name.toLowerCase().includes(selectedVoiceName.toLowerCase()));
-                        if (!targetVoice) {
-                            targetVoice = voices.find(v => (v.lang.startsWith('id') || v.lang.startsWith('in')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('damayanti') || v.name.toLowerCase().includes('gadis') || v.name.toLowerCase().includes('indonesia')));
-                        }
-                        if (!targetVoice) {
-                            targetVoice = voices.find(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
-                        }
-                        if (targetVoice) {
-                            utterance.voice = targetVoice;
-                        } else {
-                            utterance.lang = 'id-ID';
-                        }
-
-                        utterance.onend = resolve;
-                        utterance.onerror = (e) => reject(e);
-                        
-                        currentBrowserUtterance = utterance;
-                        window.speechSynthesis.speak(utterance);
-                    });
+                    // Fallback to browser native SpeechSynthesis with exact profile (gender, pitch, tempo)
+                    await playSpeechSynthesisUtterance(text, chosenVoice);
                 }
 
             } catch (error) {
@@ -1078,13 +1306,25 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                                 if (cont) cont.classList.remove('hidden');
                                 loadDriveFiles();
                             } else if (response && response.error) {
-                                console.error('OAuth token error:', response);
+                                if (response.error === 'access_denied' || response.error === 'popup_closed_by_user') {
+                                    console.log('Permintaan otorisasi Google Drive dibatalkan pengguna.');
+                                    return;
+                                }
+                                console.warn('OAuth token notice:', response);
                                 alert(`Gagal menghubungkan Google Drive: ${response.error_description || response.error}\n\nJika menggunakan GitHub Pages, pastikan URL origin (https://${window.location.hostname}) telah didaftarkan pada Authorized JavaScript Origins di Google Cloud Console.`);
                             }
                         },
                         error_callback: (err) => {
-                            console.error('OAuth error callback:', err);
-                            alert(`Error OAuth Google: ${err.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
+                            if (err && (err.type === 'popup_closed' || (err.message && err.message.toLowerCase().includes('closed')))) {
+                                console.log('Popup otentikasi Google Drive ditutup.');
+                                return;
+                            }
+                            if (err && err.type === 'popup_failed_to_open') {
+                                alert('Popup Google diblokir oleh browser. Mohon izinkan pop-up (Allow popups) untuk situs ini di peramban Anda.');
+                                return;
+                            }
+                            console.warn('OAuth error notice:', err);
+                            alert(`Error OAuth Google: ${err?.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
                         }
                     });
                 } catch (err) {
@@ -1325,9 +1565,9 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 } catch (e) {
                     console.error("Login error:", e);
                     if (e.code === 'auth/unauthorized-domain') {
-                        alert(`Domain "${window.location.hostname}" belum diizinkan di Firebase Authentication.\n\nCara mengatasi:\n1. Buka Firebase Console (project: ancient-collector-zv9wh)\n2. Buka Authentication > Settings > Authorized domains\n3. Klik "Add domain" dan tambahkan:\n${window.location.hostname}`);
+                        alert(`Domain "${window.location.hostname}" belum didaftarkan di Firebase Authentication.\n\n📌 Catatan Penting:\nSeluruh fitur Announcer Stasiun, Play TTS Bel, Download MP3 & WAV dapat digunakan 100% langsung tanpa harus login!\n\nJika ingin mengaktifkan sinkronisasi Cloud akun:\n1. Buka Firebase Console (project: ancient-collector-zv9wh)\n2. Masuk ke Authentication > Settings > Authorized domains\n3. Klik "Add domain" lalu masukkan: ${window.location.hostname}`);
                     } else if (e.code === 'auth/popup-closed-by-user') {
-                        console.log('Login popup ditutup.');
+                        console.log('Login popup ditutup oleh pengguna.');
                     } else {
                         alert('Gagal Masuk: ' + (e.message || e.code));
                     }
