@@ -6,6 +6,8 @@
     <title>ANNOUNCER DI STASIUN KETAPANG</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+    <script>if (typeof lamejs === 'undefined') { document.write('<script src="./lame.min.js"><\/script>'); }</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
@@ -184,10 +186,19 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                             </button>
                         </div>
                         
-                        <a id="downloadTtsBtn" class="hidden btn-press w-full py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2" download="Pengumuman_TTS.wav">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
-                            Download Audio TTS (.wav)
-                        </a>
+                        <!-- Pilihan Download TTS (MP3 & WAV) -->
+                        <div id="ttsDownloadOptions" class="hidden flex flex-col sm:flex-row gap-2 mt-1">
+                            <button id="downloadMp3Btn" type="button" class="btn-press flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold text-xs transition-all shadow-md shadow-emerald-950/20 flex items-center justify-center gap-1.5 border border-emerald-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+                                <span>Download MP3</span>
+                                <span class="px-1.5 py-0.5 text-[9px] bg-emerald-800 rounded font-bold uppercase tracking-wider">MP3</span>
+                            </button>
+                            <a id="downloadTtsBtn" class="btn-press flex-1 py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5" download="Pengumuman_TTS.wav">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+                                <span>Download WAV</span>
+                                <span class="px-1.5 py-0.5 text-[9px] bg-slate-800 rounded font-bold uppercase tracking-wider">WAV</span>
+                            </a>
+                        </div>
 
                         <!-- Google Drive Management Panel -->
                         <div class="mt-3 p-3 bg-slate-800/40 border border-slate-700/60 rounded-xl space-y-2">
@@ -206,6 +217,20 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                                     Simpan ke Drive
                                 </button>
                             </div>
+                            <!-- Konfigurasi Client ID untuk GitHub Pages atau Custom Domain -->
+                            <details class="text-[11px] text-slate-400 pt-1">
+                                <summary class="cursor-pointer hover:text-slate-300 select-none text-[10px]">⚙️ Pengaturan OAuth Drive (GitHub Pages)</summary>
+                                <div class="mt-2 space-y-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60">
+                                    <div>
+                                        <label class="block text-[10px] text-slate-300 font-medium mb-1">Google OAuth Client ID:</label>
+                                        <input type="text" id="customDriveClientId" class="w-full input-field px-2.5 py-1.5 text-xs rounded bg-slate-800 text-slate-200 border border-slate-700 focus:border-green-500" placeholder="235562441762-...apps.googleusercontent.com">
+                                    </div>
+                                    <div class="flex justify-between items-center text-[9px] text-slate-400">
+                                        <span>Jika di-hosting di GitHub Pages, tambahkan origin Anda di Google Cloud Console.</span>
+                                        <button type="button" id="saveClientIdBtn" class="px-2.5 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-medium text-[10px] shrink-0 ml-2">Simpan</button>
+                                    </div>
+                                </div>
+                            </details>
                             <div id="driveFilesContainer" class="hidden mt-2 space-y-1.5">
                                 <p class="text-[11px] font-medium text-slate-300">File Audio di Google Drive:</p>
                                 <div id="driveFilesList" class="max-h-32 overflow-y-auto space-y-1.5 pr-1">
@@ -424,12 +449,64 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         const ttsText = document.getElementById('ttsText');
         const singleSpeakerCheck = document.getElementById('singleSpeaker');
         const downloadTtsBtn = document.getElementById('downloadTtsBtn');
+        const downloadMp3Btn = document.getElementById('downloadMp3Btn');
+        const ttsDownloadOptions = document.getElementById('ttsDownloadOptions');
         
         let currentPlayingAudio = null;
 
         tempSlider.addEventListener('input', (e) => {
             tempDisplay.textContent = parseFloat(e.target.value).toFixed(1);
         });
+
+        async function convertWavBlobToMp3Blob(wavBlob) {
+            if (typeof lamejs === 'undefined' || !lamejs.Mp3Encoder) {
+                throw new Error('Encoder MP3 (lamejs) belum termuat. Mohon periksa koneksi internet atau refresh halaman.');
+            }
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const arrayBuffer = await wavBlob.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+            
+            const channels = audioBuffer.numberOfChannels;
+            const sampleRate = audioBuffer.sampleRate;
+            const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, 128);
+            const mp3Data = [];
+            const sampleBlockSize = 1152;
+            
+            if (channels === 1) {
+                const floatSamples = audioBuffer.getChannelData(0);
+                const int16Samples = new Int16Array(floatSamples.length);
+                for (let i = 0; i < floatSamples.length; i++) {
+                    const s = Math.max(-1, Math.min(1, floatSamples[i]));
+                    int16Samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                }
+                for (let i = 0; i < int16Samples.length; i += sampleBlockSize) {
+                    const chunk = int16Samples.subarray(i, i + sampleBlockSize);
+                    const mp3buf = mp3encoder.encodeBuffer(chunk);
+                    if (mp3buf && mp3buf.length > 0) mp3Data.push(mp3buf);
+                }
+            } else {
+                const leftFloat = audioBuffer.getChannelData(0);
+                const rightFloat = audioBuffer.getChannelData(1);
+                const leftInt16 = new Int16Array(leftFloat.length);
+                const rightInt16 = new Int16Array(rightFloat.length);
+                for (let i = 0; i < leftFloat.length; i++) {
+                    const sL = Math.max(-1, Math.min(1, leftFloat[i]));
+                    const sR = Math.max(-1, Math.min(1, rightFloat[i]));
+                    leftInt16[i] = sL < 0 ? sL * 0x8000 : sL * 0x7FFF;
+                    rightInt16[i] = sR < 0 ? sR * 0x8000 : sR * 0x7FFF;
+                }
+                for (let i = 0; i < leftInt16.length; i += sampleBlockSize) {
+                    const leftChunk = leftInt16.subarray(i, i + sampleBlockSize);
+                    const rightChunk = rightInt16.subarray(i, i + sampleBlockSize);
+                    const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+                    if (mp3buf && mp3buf.length > 0) mp3Data.push(mp3buf);
+                }
+            }
+            const endBuf = mp3encoder.flush();
+            if (endBuf && endBuf.length > 0) mp3Data.push(endBuf);
+            
+            return new Blob(mp3Data, { type: 'audio/mp3' });
+        }
 
         function pcmToWav(pcm16, sampleRate) {
             const numChannels = 1;
@@ -610,7 +687,7 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             isTtsPlaying = true;
             generateTtsBtn.disabled = true;
             generateTtsBtn.classList.add('opacity-50');
-            downloadTtsBtn.classList.add('hidden');
+            if (ttsDownloadOptions) ttsDownloadOptions.classList.add('hidden');
             document.getElementById('ttsIcon').classList.add('hidden');
             document.getElementById('ttsLoading').classList.remove('hidden');
             document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
@@ -635,10 +712,6 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 }
 
                 if (audioUrl) {
-                    downloadTtsBtn.href = audioUrl;
-                    downloadTtsBtn.download = `Pengumuman_TTS.wav`;
-                    downloadTtsBtn.classList.remove('hidden');
-
                     try {
                         const blobRes = await fetch(audioUrl);
                         currentGeneratedBlob = await blobRes.blob();
@@ -646,6 +719,14 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                         if (saveToDriveBtn) saveToDriveBtn.classList.remove('hidden');
                     } catch (e) {
                         console.warn("Could not capture blob for Drive:", e);
+                    }
+
+                    if (downloadTtsBtn) {
+                        downloadTtsBtn.href = audioUrl;
+                        downloadTtsBtn.download = `Pengumuman_TTS_${Date.now()}.wav`;
+                    }
+                    if (ttsDownloadOptions) {
+                        ttsDownloadOptions.classList.remove('hidden');
                     }
 
                     const audio = new Audio(audioUrl);
@@ -699,6 +780,39 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                 currentPlayingAudio = null;
             }
         });
+
+        if (downloadMp3Btn) {
+            downloadMp3Btn.addEventListener('click', async () => {
+                if (!currentGeneratedBlob) {
+                    alert('Belum ada file audio TTS yang dihasilkan.');
+                    return;
+                }
+                const originalHtml = downloadMp3Btn.innerHTML;
+                try {
+                    downloadMp3Btn.disabled = true;
+                    downloadMp3Btn.innerHTML = `
+                        <div class="spinner w-3.5 h-3.5 border-white"></div>
+                        <span>Mengonversi ke MP3...</span>
+                    `;
+                    const mp3Blob = await convertWavBlobToMp3Blob(currentGeneratedBlob);
+                    const mp3Url = URL.createObjectURL(mp3Blob);
+                    const a = document.createElement('a');
+                    a.href = mp3Url;
+                    const safeName = (ttsText.value.trim().substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_')) || 'Pengumuman_Stasiun';
+                    a.download = `Pengumuman_${safeName}_${Date.now()}.mp3`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(mp3Url), 15000);
+                } catch (e) {
+                    console.error("Gagal convert MP3:", e);
+                    alert("Gagal mengonversi ke format MP3: " + e.message);
+                } finally {
+                    downloadMp3Btn.disabled = false;
+                    downloadMp3Btn.innerHTML = originalHtml;
+                }
+            });
+        }
 
         let trains = [];
         const trainsContainer = document.getElementById('trainsContainer');
@@ -931,32 +1045,75 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         let gDriveAccessToken = localStorage.getItem('gdrive_access_token');
         let currentGeneratedBlob = null;
 
+        const DEFAULT_DRIVE_CLIENT_ID = '235562441762-83aja4rl7550uh0apadatjo5mfj64fj6.apps.googleusercontent.com';
+
+        function getDriveClientId() {
+            return localStorage.getItem('gdrive_client_id') || DEFAULT_DRIVE_CLIENT_ID;
+        }
+
         function initGoogleDrive() {
-            if (typeof google !== 'undefined' && google.accounts) {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: '730712757287.apps.googleusercontent.com',
-                    scope: 'https://www.googleapis.com/auth/drive.file',
-                    callback: (response) => {
-                        if (response && response.access_token) {
-                            gDriveAccessToken = response.access_token;
-                            localStorage.setItem('gdrive_access_token', gDriveAccessToken);
-                            const st = document.getElementById('driveStatus');
-                            if (st) {
-                                st.textContent = 'Terhubung ke Google Drive';
-                                st.className = 'text-[11px] text-green-400 font-medium';
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+                const clientId = getDriveClientId();
+                const customInp = document.getElementById('customDriveClientId');
+                if (customInp && !customInp.value) {
+                    customInp.value = clientId;
+                }
+
+                try {
+                    tokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: clientId,
+                        scope: 'https://www.googleapis.com/auth/drive.file',
+                        callback: (response) => {
+                            if (response && response.access_token) {
+                                gDriveAccessToken = response.access_token;
+                                localStorage.setItem('gdrive_access_token', gDriveAccessToken);
+                                const st = document.getElementById('driveStatus');
+                                if (st) {
+                                    st.textContent = 'Terhubung ke Google Drive';
+                                    st.className = 'text-[11px] text-green-400 font-medium';
+                                }
+                                const connectBtn = document.getElementById('connectDriveBtn');
+                                if (connectBtn) connectBtn.textContent = 'Drive Terhubung';
+                                const cont = document.getElementById('driveFilesContainer');
+                                if (cont) cont.classList.remove('hidden');
+                                loadDriveFiles();
+                            } else if (response && response.error) {
+                                console.error('OAuth token error:', response);
+                                alert(`Gagal menghubungkan Google Drive: ${response.error_description || response.error}\n\nJika menggunakan GitHub Pages, pastikan URL origin (https://${window.location.hostname}) telah didaftarkan pada Authorized JavaScript Origins di Google Cloud Console.`);
                             }
-                            const connectBtn = document.getElementById('connectDriveBtn');
-                            if (connectBtn) connectBtn.textContent = 'Drive Terhubung';
-                            const cont = document.getElementById('driveFilesContainer');
-                            if (cont) cont.classList.remove('hidden');
-                            loadDriveFiles();
+                        },
+                        error_callback: (err) => {
+                            console.error('OAuth error callback:', err);
+                            alert(`Error OAuth Google: ${err.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
                         }
-                    }
-                });
+                    });
+                } catch (err) {
+                    console.error('Inisialisasi Drive gagal:', err);
+                }
             }
         }
 
         setTimeout(initGoogleDrive, 1200);
+
+        const saveClientIdBtn = document.getElementById('saveClientIdBtn');
+        if (saveClientIdBtn) {
+            saveClientIdBtn.addEventListener('click', () => {
+                const inp = document.getElementById('customDriveClientId');
+                if (inp) {
+                    const val = inp.value.trim();
+                    if (val) {
+                        localStorage.setItem('gdrive_client_id', val);
+                        initGoogleDrive();
+                        alert('Client ID Google Drive berhasil disimpan! Silakan klik "Hubungkan Drive".');
+                    } else {
+                        localStorage.removeItem('gdrive_client_id');
+                        inp.value = DEFAULT_DRIVE_CLIENT_ID;
+                        initGoogleDrive();
+                        alert('Client ID direset ke default.');
+                    }
+                }
+            });
+        }
 
         const connectDriveBtn = document.getElementById('connectDriveBtn');
         if (connectDriveBtn) {
@@ -1087,12 +1244,32 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        const DEFAULT_FIREBASE_CONFIG = {
+            projectId: "ancient-collector-zv9wh",
+            appId: "1:235562441762:web:299b8e2771fae035d4fe7b",
+            apiKey: "AIzaSyDCxxpeGV-WPVstuBrNr7rwb-c4kqaF150",
+            authDomain: "ancient-collector-zv9wh.firebaseapp.com",
+            firestoreDatabaseId: "ai-studio-announcerktg-d9bccc3d-1da3-4d6c-933c-eee3e6498b7c",
+            storageBucket: "ancient-collector-zv9wh.firebasestorage.app",
+            messagingSenderId: "235562441762",
+            oAuthClientId: "235562441762-83aja4rl7550uh0apadatjo5mfj64fj6.apps.googleusercontent.com"
+        };
+
         let db, auth, currentUser = null;
 
         async function initFirebase() {
             try {
-                const cfgRes = await fetch('/firebase-applet-config.json');
-                const firebaseConfig = await cfgRes.json();
+                let firebaseConfig = DEFAULT_FIREBASE_CONFIG;
+                try {
+                    const cfgRes = await fetch('./firebase-applet-config.json');
+                    if (cfgRes.ok) {
+                        const parsed = await cfgRes.json();
+                        if (parsed && parsed.apiKey) firebaseConfig = parsed;
+                    }
+                } catch (fetchErr) {
+                    console.info("Menggunakan konfigurasi Firebase bawaan untuk GitHub Pages.");
+                }
+
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = firebaseConfig.firestoreDatabaseId ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : getFirestore(app);
@@ -1130,20 +1307,30 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
         }
 
-        setTimeout(initFirebase, 800);
+        setTimeout(initFirebase, 200);
 
         const loginBtn = document.getElementById('loginBtn');
         if (loginBtn) {
             loginBtn.addEventListener('click', async () => {
                 if (!auth) {
-                    alert('Firebase sedang memuat, mohon tunggu sebentar.');
+                    await initFirebase();
+                }
+                if (!auth) {
+                    alert('Firebase belum siap. Silakan periksa koneksi internet Anda.');
                     return;
                 }
                 try {
                     const provider = new GoogleAuthProvider();
                     await signInWithPopup(auth, provider);
                 } catch (e) {
-                    alert('Gagal Masuk: ' + e.message);
+                    console.error("Login error:", e);
+                    if (e.code === 'auth/unauthorized-domain') {
+                        alert(`Domain "${window.location.hostname}" belum diizinkan di Firebase Authentication.\n\nCara mengatasi:\n1. Buka Firebase Console (project: ancient-collector-zv9wh)\n2. Buka Authentication > Settings > Authorized domains\n3. Klik "Add domain" dan tambahkan:\n${window.location.hostname}`);
+                    } else if (e.code === 'auth/popup-closed-by-user') {
+                        console.log('Login popup ditutup.');
+                    } else {
+                        alert('Gagal Masuk: ' + (e.message || e.code));
+                    }
                 }
             });
         }
