@@ -79,33 +79,45 @@
 
                 <!-- Template Pilihan Cepat -->
                 <div class="mb-4">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">⚡ Pilihan Template Cepat (Klik untuk Pasang):</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="boarding">
-                            🎫 Boarding Penumpang
-                        </button>
-                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="arrival">
-                            🚂 Kereta Tiba
-                        </button>
-                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="departure">
-                            🟢 Kereta Berangkat
-                        </button>
-                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="safety">
-                            ⚠️ Keselamatan Peron
-                        </button>
-                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="luggage">
-                            🧳 Barang Bawaan
-                        </button>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">⚡ Pilihan Template (Klik untuk Pasang):</label>
+                        <span id="templateNotice" class="text-[11px] text-emerald-400 font-medium hidden">✅ Template tersimpan!</span>
+                    </div>
+                    <div id="templateButtonsContainer" class="flex flex-wrap gap-2">
+                        <!-- Tombol template bawaan & template buatan Anda akan muncul di sini secara otomatis -->
                     </div>
                 </div>
 
                 <!-- Kotak Teks Pengumuman -->
                 <div class="mb-4">
-                    <div class="flex justify-between items-center mb-1.5">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-1.5">
                         <label for="ttsText" class="text-xs font-semibold text-slate-300">Teks Pengumuman (Dapat diedit bebas):</label>
-                        <button type="button" id="clearTextBtn" class="text-[11px] text-slate-400 hover:text-red-400">Kosongkan Teks</button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="toggleSaveTemplateBtn" class="text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 shadow-sm active:scale-95" title="Simpan isi teks pengumuman saat ini menjadi template pilihan">
+                                <span>💾</span>
+                                <span>Simpan Jadi Template</span>
+                            </button>
+                            <button type="button" id="clearTextBtn" class="text-[11px] text-slate-400 hover:text-red-400 transition-colors">Kosongkan Teks</button>
+                        </div>
                     </div>
-                    <textarea id="ttsText" rows="6" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none leading-relaxed transition-all" placeholder="Ketik kata-kata pengumuman di sini...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.</textarea>
+                    <textarea id="ttsText" rows="6" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none leading-relaxed transition-all" placeholder="Ketik kata-kata pengumuman di sini...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Jika tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan memasuki peron. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.</textarea>
+
+                    <!-- Bar Simpan Teks Menjadi Template (Muncul Praktis Saat Tombol Simpan Diklik) -->
+                    <div id="saveTemplateBox" class="hidden mt-2 p-3 bg-slate-900 border border-amber-500/40 rounded-xl shadow-lg transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                <span>💾</span> Simpan Teks di Atas Jadi Template Pilihan:
+                            </span>
+                            <button type="button" id="closeSaveBoxBtn" class="text-xs text-slate-400 hover:text-slate-200">✕ Batal</button>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="saveTemplateNameInput" placeholder="Ketik nama template (contoh: 🚂 KA Probowangi Tiba)..." class="flex-grow bg-slate-950 border border-slate-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 outline-none">
+                            <button type="button" id="doSaveTemplateBtn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs whitespace-nowrap shadow transition-all active:scale-95 flex items-center justify-center gap-1.5">
+                                <span>Simpan Template Sekarang</span>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Template yang Anda simpan akan langsung muncul di baris "Pilihan Template" di atas dan tersimpan aman di browser.</p>
+                    </div>
                 </div>
 
                 <!-- Pilihan Karakter Suara & Bel -->
@@ -246,26 +258,223 @@
             });
         }
 
-        // --- 2. Template Teks Cepat ---
-        const TEMPLATES = {
-            boarding: "Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Jika tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan memasuki peron. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.",
-            arrival: "Perhatian, sesaat lagi di jalur satu akan tiba kereta api Sri Tanjung dari arah Surabaya dengan tujuan akhir Stasiun Ketapang Banyuwangi. Kepada penumpang yang akan turun, mohon periksa kembali barang bawaan Anda agar tidak tertinggal di dalam kereta. Terima kasih.",
-            departure: "Perhatian, kereta api Wijayakusuma di jalur dua tujuan akhir Stasiun Cilacap via Surabaya Gubeng sesaat lagi akan diberangkatkan. Bagi para penumpang yang belum naik, kami persilakan untuk segera naik ke atas kereta karena pintu kereta akan segera ditutup. Terima kasih.",
-            safety: "Pemberitahuan keselamatan. Kami himbau kepada seluruh pengguna jasa kereta api untuk selalu berdiri di belakang garis kuning peron saat kereta api sedang bergerak atau melintas. Jagalah selalu anak-anak Anda dan utamakan keselamatan bersama.",
-            luggage: "Mohon perhatian. Bagi seluruh penumpang yang berada di ruang tunggu dan peron Stasiun Ketapang, mohon selalu menjaga dan mengawasi barang bawaan berharga Anda. Pihak stasiun tidak bertanggung jawab atas kehilangan atau tertukarnya barang akibat kelalaian penumpang."
-        };
+        // --- 2. Template Teks Cepat & Simpan Template Baru ---
+        const DEFAULT_TEMPLATES = [
+            {
+                id: "boarding",
+                title: "🎫 Boarding Penumpang",
+                text: "Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Jika tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan memasuki peron. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.",
+                isDefault: true
+            },
+            {
+                id: "arrival",
+                title: "🚂 Kereta Tiba",
+                text: "Perhatian, sesaat lagi di jalur satu akan tiba kereta api Sri Tanjung dari arah Surabaya dengan tujuan akhir Stasiun Ketapang Banyuwangi. Kepada penumpang yang akan turun, mohon periksa kembali barang bawaan Anda agar tidak tertinggal di dalam kereta. Terima kasih.",
+                isDefault: true
+            },
+            {
+                id: "departure",
+                title: "🟢 Kereta Berangkat",
+                text: "Perhatian, kereta api Wijayakusuma di jalur dua tujuan akhir Stasiun Cilacap via Surabaya Gubeng sesaat lagi akan diberangkatkan. Bagi para penumpang yang belum naik, kami persilakan untuk segera naik ke atas kereta karena pintu kereta akan segera ditutup. Terima kasih.",
+                isDefault: true
+            },
+            {
+                id: "safety",
+                title: "⚠️ Keselamatan Peron",
+                text: "Pemberitahuan keselamatan. Kami himbau kepada seluruh pengguna jasa kereta api untuk selalu berdiri di belakang garis kuning peron saat kereta api sedang bergerak atau melintas. Jagalah selalu anak-anak Anda dan utamakan keselamatan bersama.",
+                isDefault: true
+            },
+            {
+                id: "luggage",
+                title: "🧳 Barang Bawaan",
+                text: "Mohon perhatian. Bagi seluruh penumpang yang berada di ruang tunggu dan peron Stasiun Ketapang, mohon selalu menjaga dan mengawasi barang bawaan berharga Anda. Pihak stasiun tidak bertanggung jawab atas kehilangan atau tertukarnya barang akibat kelalaian penumpang.",
+                isDefault: true
+            }
+        ];
 
-        document.querySelectorAll('.template-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.getAttribute('data-type');
-                if (TEMPLATES[type]) {
-                    document.getElementById('ttsText').value = TEMPLATES[type];
+        let customTemplates = [];
+        let activeTemplateId = "boarding";
+
+        function loadCustomTemplates() {
+            try {
+                const saved = localStorage.getItem('announcer_custom_templates_v2');
+                if (saved) {
+                    customTemplates = JSON.parse(saved);
+                }
+            } catch (err) {
+                console.error("Gagal memuat template kustom:", err);
+                customTemplates = [];
+            }
+        }
+
+        function saveCustomTemplates() {
+            try {
+                localStorage.setItem('announcer_custom_templates_v2', JSON.stringify(customTemplates));
+            } catch (err) {
+                console.error("Gagal menyimpan template kustom:", err);
+            }
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('templateButtonsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const allTemplates = [...DEFAULT_TEMPLATES, ...customTemplates];
+
+            allTemplates.forEach(tpl => {
+                const isActive = tpl.id === activeTemplateId;
+
+                if (tpl.isDefault) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `text-xs font-medium px-3 py-1.5 rounded-lg transition-all border ${
+                        isActive 
+                            ? 'bg-orange-600/30 text-orange-200 border-orange-500 shadow-sm' 
+                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-orange-500/50'
+                    }`;
+                    btn.textContent = tpl.title;
+                    btn.addEventListener('click', () => {
+                        activeTemplateId = tpl.id;
+                        document.getElementById('ttsText').value = tpl.text;
+                        renderTemplates();
+                    });
+                    container.appendChild(btn);
+                } else {
+                    // Template buatan pengguna
+                    const wrap = document.createElement('div');
+                    wrap.className = `inline-flex items-center rounded-lg border transition-all text-xs font-medium ${
+                        isActive
+                            ? 'bg-amber-600/30 text-amber-200 border-amber-400 shadow-sm'
+                            : 'bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 border-amber-500/50 hover:border-amber-400'
+                    }`;
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'px-2.5 py-1.5 flex items-center gap-1.5 text-left';
+                    btn.innerHTML = `<span class="text-amber-400">📌</span><span>${escapeHtml(tpl.title)}</span>`;
+                    btn.addEventListener('click', () => {
+                        activeTemplateId = tpl.id;
+                        document.getElementById('ttsText').value = tpl.text;
+                        renderTemplates();
+                    });
+
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = 'pr-2 pl-1 py-1.5 text-amber-400/60 hover:text-red-400 transition-colors text-xs font-bold';
+                    delBtn.title = 'Hapus template ini';
+                    delBtn.innerHTML = '✕';
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm(`Hapus template "${tpl.title}"?`)) {
+                            customTemplates = customTemplates.filter(t => t.id !== tpl.id);
+                            saveCustomTemplates();
+                            if (activeTemplateId === tpl.id) {
+                                activeTemplateId = 'boarding';
+                            }
+                            renderTemplates();
+                            showNotice('🗑️ Template dihapus');
+                        }
+                    });
+
+                    wrap.appendChild(btn);
+                    wrap.appendChild(delBtn);
+                    container.appendChild(wrap);
                 }
             });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function showNotice(msg) {
+            const notice = document.getElementById('templateNotice');
+            if (!notice) return;
+            notice.textContent = msg;
+            notice.classList.remove('hidden');
+            setTimeout(() => {
+                notice.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Toggle dan Simpan Template dari Teks Pengumuman
+        const toggleSaveTemplateBtn = document.getElementById('toggleSaveTemplateBtn');
+        const saveTemplateBox = document.getElementById('saveTemplateBox');
+        const closeSaveBoxBtn = document.getElementById('closeSaveBoxBtn');
+        const saveTemplateNameInput = document.getElementById('saveTemplateNameInput');
+        const doSaveTemplateBtn = document.getElementById('doSaveTemplateBtn');
+
+        toggleSaveTemplateBtn.addEventListener('click', () => {
+            const currentText = document.getElementById('ttsText').value.trim();
+            if (!currentText) {
+                alert('Teks pengumuman masih kosong. Silakan ketik pengumuman terlebih dahulu sebelum menyimpannya jadi template.');
+                return;
+            }
+
+            const isHidden = saveTemplateBox.classList.contains('hidden');
+            if (isHidden) {
+                saveTemplateBox.classList.remove('hidden');
+                // Beri saran nama template otomatis jika ada kata depan
+                const words = currentText.split(/\s+/).slice(0, 4).join(' ');
+                saveTemplateNameInput.value = `Template: ${words.length > 20 ? words.substring(0, 20) + '...' : words}`;
+                saveTemplateNameInput.focus();
+                saveTemplateNameInput.select();
+            } else {
+                saveTemplateBox.classList.add('hidden');
+            }
+        });
+
+        closeSaveBoxBtn.addEventListener('click', () => {
+            saveTemplateBox.classList.add('hidden');
+        });
+
+        function handleSaveTemplateAction() {
+            const currentText = document.getElementById('ttsText').value.trim();
+            if (!currentText) {
+                alert('Teks pengumuman tidak boleh kosong.');
+                return;
+            }
+
+            let title = saveTemplateNameInput.value.trim();
+            if (!title) {
+                title = `Template ${customTemplates.length + 1}`;
+            }
+
+            const newId = 'tpl-' + Date.now();
+            customTemplates.push({
+                id: newId,
+                title: title,
+                text: currentText,
+                isDefault: false
+            });
+
+            saveCustomTemplates();
+            activeTemplateId = newId;
+            renderTemplates();
+
+            saveTemplateBox.classList.add('hidden');
+            saveTemplateNameInput.value = '';
+            showNotice(`✅ Template "${title}" berhasil disimpan!`);
+        }
+
+        doSaveTemplateBtn.addEventListener('click', handleSaveTemplateAction);
+
+        saveTemplateNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSaveTemplateAction();
+            } else if (e.key === 'Escape') {
+                saveTemplateBox.classList.add('hidden');
+            }
         });
 
         document.getElementById('clearTextBtn').addEventListener('click', () => {
             document.getElementById('ttsText').value = '';
+            activeTemplateId = null;
+            renderTemplates();
         });
 
         document.getElementById('testChimeBtn').addEventListener('click', async () => {
@@ -823,6 +1032,8 @@
         });
 
         // Mulai aplikasi
+        loadCustomTemplates();
+        renderTemplates();
         loadTrains();
     </script>
 </body>
