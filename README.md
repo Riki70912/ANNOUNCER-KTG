@@ -47,3 +47,27 @@ Render.com mendukung backend Node.js (Web Service) secara penuh di tier gratis, 
    - Setelah selesai (status: *Live*), Anda akan mendapatkan URL publik gratis seperti:
      `https://announcer-ketapang.onrender.com`
    - Buka URL tersebut di browser, dan suara TTS beserta bel stasiun akan berbunyi persis seperti di AI Studio!
+
+---
+
+### Jika Diminta "Add Card" di Render:
+1. **Periksa pilihan paket**: Pastikan pada bagian **Instance Type** Anda memilih opsi **Free ($0/month)**, bukan Starter ($7/month).
+2. Jika Render tetap meminta kartu (kebijakan verifikasi akun baru), Anda tidak perlu khawatir karena ada pilihan hosting di bawah ini yang **100% GRATIS TANPA PERLU KARTU KREDIT/DEBIT**.
+
+---
+
+## Pilihan Alternatif: Vercel (100% Gratis & Tanpa Kartu Kredit)
+Project ini sudah dilengkapi konfigurasi `vercel.json` dan otomatis kompatibel dengan Vercel:
+1. Buka [vercel.com](https://vercel.com/) dan login menggunakan akun GitHub Anda.
+2. Klik **"Add New..."** ➔ **"Project"**.
+3. Pilih repository GitHub Anda (`announcer-ktg`), lalu klik **"Import"**.
+4. Di bagian *Environment Variables*, tambahkan `GEMINI_API_KEY` (opsional jika ada).
+5. Klik tombol **"Deploy"**. Selesai dalam 30 detik!
+
+---
+
+## Pilihan Alternatif: Glitch.com (100% Gratis & Tanpa Kartu Kredit)
+1. Buka [glitch.com](https://glitch.com/) dan login menggunakan GitHub.
+2. Klik **"New Project"** (kanan atas) ➔ **"Import from GitHub"**.
+3. Masukkan link repositori GitHub Anda.
+4. Aplikasi langsung berjalan otomatis!

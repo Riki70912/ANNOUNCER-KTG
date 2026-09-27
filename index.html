@@ -3,593 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANNOUNCER DI STASIUN KETAPANG</title>
+    <title>Announcer Stasiun Ketapang - Sistem Pengumuman Suara</title>
+    <meta name="description" content="Sistem Pengumuman Terpadu Stasiun Ketapang dengan Bel Ding Dong dan Suara Suara TTS Alami">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
     <script>if (typeof lamejs === 'undefined') { document.write('<script src="./lame.min.js"><\/script>'); }</script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
-            color: #f8fafc; /* Slate 50 */
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0c1322;
+            color: #f1f5f9;
         }
-        
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        .btn-active:active {
+            transform: scale(0.98);
         }
-
-        .input-field {
-            background-color: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
-            transition: all 0.2s;
+        .pulse-air {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
-        .input-field:focus {
-            border-color: #f97316;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
         }
-
-        .btn-press {
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-press:active {
-            transform: scale(0.96);
-        }
-
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-200">
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
-    <header class="bg-slate-900 border-b border-slate-700/50 py-5 px-6 shadow-xl sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-orange-500/10 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256" class="text-orange-500">
-                        <path fill="currentColor" d="M176,16H80A48.05,48.05,0,0,0,32,64v96a48.05,48.05,0,0,0,48,48v16a8,8,0,0,0,16,0V208h64v16a8,8,0,0,0,16,0V208a48.05,48.05,0,0,0,48-48V64A48.05,48.05,0,0,0,176,16ZM80,32h96a32,32,0,0,1,32,32V80H48V64A32,32,0,0,1,80,32Zm8,128a16,16,0,1,1,16-16A16,16,0,0,1,88,160Zm80,0a16,16,0,1,1,16-16A16,16,0,0,1,168,160Zm40-48H48V96H208Z"></path>
-                    </svg>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-bold text-xl">
+                    🚆
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-yellow-200">
-                        ANNOUNCER DI STASIUN KETAPANG
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Announcer Stasiun Ketapang
+                        <span class="text-[10px] font-semibold uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full">Banyuwangi</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">Sistem Pengumuman Terpadu</p>
+                    <p class="text-xs text-slate-400">Sistem Pengumuman Kereta Api • Bel Ding-Dong & Suara TTS</p>
                 </div>
             </div>
+
+            <!-- Status On Air / Standby -->
             <div class="flex items-center gap-2">
-                <div id="authContainer" class="flex items-center gap-2">
-                    <button id="loginBtn" class="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-semibold shadow transition-colors flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-35.06-30.15,48,48,0,1,0-57.4,0,79.66,79.66,0,0,0-35.06,30.15,88,88,0,1,1,127.52,0Z"></path></svg>
-                        Buat Akun / Masuk
-                    </button>
-                    <div id="userProfile" class="hidden flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-xl">
-                        <span id="userEmail" class="text-xs font-medium text-slate-200"></span>
-                        <button id="logoutBtn" class="text-xs text-red-400 hover:text-red-300 font-semibold ml-2">Keluar</button>
-                    </div>
+                <div id="onAirBadge" class="hidden flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 px-3 py-1.5 rounded-full text-xs font-bold">
+                    <span class="w-2 h-2 rounded-full bg-red-500 pulse-air"></span>
+                    <span>SEDANG MEMUTAR SUARA</span>
                 </div>
-                <span class="text-xs text-orange-300 bg-orange-500/10 border border-orange-500/30 px-3 py-1.5 rounded-xl font-medium">Sistem AI Siap Digunakan</span>
+                <div id="readyBadge" class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Sistem Siap</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <div class="lg:col-span-5 flex flex-col gap-6">
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Generator Pengumuman Utama (Lebih Dominan) -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
             
-            <!-- Chime Settings -->
-            <section class="glass-panel rounded-2xl p-5">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-blue-400"><path fill="currentColor" d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216Z"></path></svg>
-                    <h2 class="text-lg font-semibold text-slate-100">Bel 'Ding Dong' Awal</h2>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                            <span>Level Kecepatan (Jeda Nada)</span>
-                            <span id="chimeSpeedDisplay" class="text-orange-400 font-mono">0.8s</span>
-                        </label>
-                        <input type="range" id="chimeSpeed" min="0.2" max="2.0" step="0.1" value="0.8" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                    </div>
-                    <button id="testChimeBtn" class="btn-press w-full py-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/50 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
-                        Test Suara Bel
-                    </button>
-                </div>
-            </section>
-
-            <!-- TTS Generator -->
-            <section class="glass-panel rounded-2xl p-5 flex flex-col flex-grow">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-orange-400"><path fill="currentColor" d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-1.08L40,215.61l12.5-37.5a8,8,0,0,0-1.08-6.54A88,88,0,1,1,128,216Z"></path></svg>
-                    <h2 class="text-lg font-semibold text-slate-100">Generator Pengumuman (TTS)</h2>
-                </div>
-                
-                <div class="space-y-4 flex-grow flex flex-col">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Pilih Suara Announcer Stasiun</label>
-                        <select id="voiceSelect" class="w-full input-field rounded-lg p-2.5 text-sm text-slate-200 font-medium bg-slate-800 border border-slate-700">
-                            <optgroup label="✨ Karakter Suara AI Gemini / Studio Master">
-                                <option value="Sulafat" selected>Sulafat — Wanita Utama & Natural (Standar Resmi Stasiun)</option>
-                                <option value="Aoede">Aoede — Wanita Formal & Anggun (Tempo Khidmat & Wibawa)</option>
-                                <option value="Zephyr">Zephyr — Wanita Cerah & Jernih (Informasi Cepat / Sopran)</option>
-                                <option value="Kore">Kore — Wanita Tegas & Profesional (Instruksi Keamanan)</option>
-                                <option value="Puck">Puck — Wanita Ramah & Hangat (Suasana & Salam Penumpang)</option>
-                                <option value="Fenrir">Fenrir — Pria Lantang & Bersemangat (Keberangkatan / Tenor)</option>
-                                <option value="Charon">Charon — Pria Dalam & Berwibawa (Pemberitahuan Penting / Bariton)</option>
-                            </optgroup>
-                            <optgroup id="browserVoicesGroup" label="💻 Suara Sistem / Browser Perangkat">
-                                <!-- Populated dynamically from device voices -->
-                            </optgroup>
-                        </select>
-                        <div id="activeVoiceBadge" class="mt-2 flex items-center justify-between text-xs text-orange-400 bg-orange-950/30 border border-orange-800/40 rounded-lg px-2.5 py-1.5">
-                            <span class="flex items-center gap-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 256 256" fill="currentColor"><path d="M160,32V224a8,8,0,0,1-12.91,6.31L78.29,176H32a16,16,0,0,1-16-16V96A16,16,0,0,1,32,80H78.29l68.8-54.31A8,8,0,0,1,160,32Zm32,64a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V104A8,8,0,0,0,192,96Zm32-16a8,8,0,0,0-8,8v80a8,8,0,0,0,16,0V88A8,8,0,0,0,224,80Z"></path></svg>
-                                <span>Karakter Aktif:</span>
-                            </span>
-                            <span id="activeVoiceName" class="font-bold text-orange-300">Sulafat (Wanita • Natural Standar)</span>
-                        </div>
-                        <div class="mt-2">
-                        <details class="text-xs text-slate-400">
-                            <summary class="cursor-pointer hover:text-slate-300">Pengaturan API Key GitHub Pages (Opsional)</summary>
-                            <div class="mt-2 flex gap-2">
-                                <input type="password" id="apiKeyInput" placeholder="Masukkan Gemini API Key..." class="w-full input-field rounded-lg px-2 py-1 text-xs text-slate-200">
-                                <button type="button" id="saveApiKeyBtn" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium">Simpan</button>
-                            </div>
-                        </details>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-1">Setiap opsi karakter suara dikonfigurasi dengan akustik, timbre, dan artikulasi stasiun yang berbeda.</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+            <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+                <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xl">📢</span>
                         <div>
-                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-1">
-                                <span>Temperatur</span>
-                                <span id="tempDisplay" class="text-orange-400 font-mono">1.0</span>
-                            </label>
-                            <input type="range" id="ttsTemp" min="0.5" max="1.5" step="0.1" value="1.0" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500 mt-2">
-                        </div>
-                        <div class="flex items-center justify-end h-full pt-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="singleSpeaker" checked class="w-4 h-4 text-orange-500 bg-slate-700 border-slate-600 rounded focus:ring-orange-500 focus:ring-2">
-                                <span class="text-sm font-medium text-slate-300">Single Speaker</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow flex flex-col">
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="block text-sm font-medium text-slate-300">Teks Announcement</label>
-                        </div>
-                        <textarea id="ttsText" class="w-full flex-grow input-field rounded-lg p-3 text-sm text-slate-200 resize-none min-h-[180px]" placeholder="Masukkan teks pengumuman...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, Paspor, atau kartu identitas berfoto lainnya. Jika kedapatan tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan untuk memasuki pintu boarding, dan tiket dianggap hangus atau tidak berlaku. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
-
-Attention please. To all Mutiara Timur train passengers, we invite you to enter the boarding gate. Before entering the boarding gate, please prepare your ticket and original ID card. If it is found that the ticket does not match the identity, passengers are not allowed to enter the boarding gate, and the ticket is considered invalid or expired. Thank you for your attention and cooperation.</textarea>
-                        <p class="text-[11px] text-slate-400 mt-1.5">Catatan: Pilihan suara AI neural (Sulafat, Aoede, Zephyr, dll) aktif sepenuhnya menggunakan **Gemini API Key**. Jika API Key belum diatur, sistem menggunakan suara bawaan browser (SpeechSynthesis).</p>
-                    </div>
-
-                    <div class="flex flex-col gap-2 mt-2">
-                        <div class="flex gap-2">
-                            <button id="generateTtsBtn" class="btn-press flex-grow py-3.5 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white rounded-xl font-bold shadow-lg shadow-orange-900/30 flex items-center justify-center gap-2">
-                                <svg id="ttsIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69ZM72,216l144-96L72,40Z"></path></svg>
-                                <div id="ttsLoading" class="spinner hidden"></div>
-                                <span id="ttsBtnText">Play TTS (dengan Bel)</span>
-                            </button>
-                            <button id="pauseTtsBtn" class="hidden btn-press px-4 py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-1.5 text-sm shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256"><path fill="currentColor" d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM112,176a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Zm48,0a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Z"></path></svg>
-                                Hentikan
-                            </button>
-                        </div>
-                        
-                        <!-- Pilihan Download TTS (MP3 & WAV) -->
-                        <div id="ttsDownloadOptions" class="hidden flex flex-col sm:flex-row gap-2 mt-1">
-                            <button id="downloadMp3Btn" type="button" class="btn-press flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold text-xs transition-all shadow-md shadow-emerald-950/20 flex items-center justify-center gap-1.5 border border-emerald-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
-                                <span>Download MP3</span>
-                                <span class="px-1.5 py-0.5 text-[9px] bg-emerald-800 rounded font-bold uppercase tracking-wider">MP3</span>
-                            </button>
-                            <a id="downloadTtsBtn" class="btn-press flex-1 py-2.5 bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5" download="Pengumuman_TTS.wav">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 256 256"><path fill="currentColor" d="M224,144v64a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V144a8,8,0,0,1,16,0v64H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
-                                <span>Download WAV</span>
-                                <span class="px-1.5 py-0.5 text-[9px] bg-slate-800 rounded font-bold uppercase tracking-wider">WAV</span>
-                            </a>
-                        </div>
-
-                        <!-- Google Drive Management Panel -->
-                        <div class="mt-3 p-3 bg-slate-800/40 border border-slate-700/60 rounded-xl space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256" class="text-green-400"><path fill="currentColor" d="M79.37,32h97.26L236,136H138.63ZM20.82,144,68,224H214l-47.18-80ZM120,40,32,184,80,224,168,80Z"></path></svg>
-                                    Manajemen Google Drive
-                                </span>
-                                <span id="driveStatus" class="text-[11px] text-slate-400">Belum terhubung</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="button" id="connectDriveBtn" class="flex-1 py-1.5 bg-green-600/30 hover:bg-green-600/50 text-green-300 border border-green-500/50 rounded-lg text-xs font-medium transition-colors">
-                                    Hubungkan Drive
-                                </button>
-                                <button type="button" id="saveToDriveBtn" class="flex-1 hidden py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition-colors shadow">
-                                    Simpan ke Drive
-                                </button>
-                            </div>
-                            <!-- Konfigurasi Client ID untuk GitHub Pages atau Custom Domain -->
-                            <details class="text-[11px] text-slate-400 pt-1">
-                                <summary class="cursor-pointer hover:text-slate-300 select-none text-[10px]">⚙️ Pengaturan OAuth Drive (GitHub Pages)</summary>
-                                <div class="mt-2 space-y-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/60">
-                                    <div>
-                                        <label class="block text-[10px] text-slate-300 font-medium mb-1">Google OAuth Client ID:</label>
-                                        <input type="text" id="customDriveClientId" class="w-full input-field px-2.5 py-1.5 text-xs rounded bg-slate-800 text-slate-200 border border-slate-700 focus:border-green-500" placeholder="235562441762-...apps.googleusercontent.com">
-                                    </div>
-                                    <div class="flex justify-between items-center text-[9px] text-slate-400">
-                                        <span>Jika di-hosting di GitHub Pages, tambahkan origin Anda di Google Cloud Console.</span>
-                                        <button type="button" id="saveClientIdBtn" class="px-2.5 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-medium text-[10px] shrink-0 ml-2">Simpan</button>
-                                    </div>
-                                </div>
-                            </details>
-                            <div id="driveFilesContainer" class="hidden mt-2 space-y-1.5">
-                                <p class="text-[11px] font-medium text-slate-300">File Audio di Google Drive:</p>
-                                <div id="driveFilesList" class="max-h-32 overflow-y-auto space-y-1.5 pr-1">
-                                    <!-- Files loaded dynamically -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Firebase Cloud Audio History Panel -->
-                        <div class="mt-3 p-3 bg-slate-800/40 border border-slate-700/60 rounded-xl space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256" class="text-orange-400"><path fill="currentColor" d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Zm-16,0a80,80,0,1,0-80,80A80,80,0,0,0,208,128Zm-88-40v48a8,8,0,0,0,16,0V88a8,8,0,0,0-16,0Zm24,56a8,8,0,0,0-8,8v16a8,8,0,0,0,16,0V152A8,8,0,0,0,144,144Z"></path></svg>
-                                    Riwayat Cloud Database (Firestore)
-                                </span>
-                                <span id="cloudStatus" class="text-[11px] text-slate-400">Offline</span>
-                            </div>
-                            <button type="button" id="saveToCloudBtn" class="w-full hidden py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-medium transition-colors shadow">
-                                Simpan Riwayat ke Cloud
-                            </button>
-                            <div id="cloudHistoryContainer" class="hidden mt-2 space-y-1.5">
-                                <p class="text-[11px] font-medium text-slate-300">Riwayat Tersimpan di Cloud:</p>
-                                <div id="cloudHistoryList" class="max-h-32 overflow-y-auto space-y-1.5 pr-1">
-                                    <!-- Cloud records loaded dynamically -->
-                                </div>
-                            </div>
+                            <h2 class="text-base font-bold text-white">Buat Pengumuman Suara</h2>
+                            <p class="text-xs text-slate-400">Pilih template cepat atau ketik pengumuman Anda sendiri</p>
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
 
-        <div class="lg:col-span-7 flex flex-col h-full">
-            <section class="glass-panel rounded-2xl p-5 flex flex-col h-full">
-                
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-700/50 pb-4">
-                    <div class="flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" class="text-green-400"><path fill="currentColor" d="M240,192h-8V96a16,16,0,0,0-16-16H40A16,16,0,0,0,24,96v96H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,96H216v96H40Zm8,24h64a8,8,0,0,1,0,16H48a8,8,0,0,1,0-16Zm96,0h48a8,8,0,0,1,0,16H144a8,8,0,0,1,0-16Z"></path></svg>
-                        <div>
-                            <h2 class="text-lg font-semibold text-slate-100">Manajemen File Audio Kereta</h2>
-                            <p class="text-xs text-slate-400">Tersimpan permanen di browser (IndexedDB - Anti Hilang saat Refresh)</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="newTrainName" placeholder="Nama Kereta (Misal: Mutiara Timur)" class="input-field rounded-lg px-3 py-1.5 text-sm w-56 sm:w-64">
-                        <button id="addTrainBtn" class="btn-press bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
-                            + Tambah
+                <!-- Template Pilihan Cepat -->
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">⚡ Pilihan Template Cepat (Klik untuk Pasang):</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="boarding">
+                            🎫 Boarding Penumpang
+                        </button>
+                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="arrival">
+                            🚂 Kereta Tiba
+                        </button>
+                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="departure">
+                            🟢 Kereta Berangkat
+                        </button>
+                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="safety">
+                            ⚠️ Keselamatan Peron
+                        </button>
+                        <button type="button" class="template-btn text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-orange-500/50 px-3 py-1.5 rounded-lg transition-all" data-type="luggage">
+                            🧳 Barang Bawaan
                         </button>
                     </div>
                 </div>
 
-                <div id="trainsContainer" class="flex-grow space-y-4 overflow-y-auto pr-2 pb-4">
-                    <div class="text-center text-slate-500 text-sm py-10" id="emptyTrainState">
-                        Belum ada menu kereta. Silakan tambahkan kereta di atas untuk mulai mengupload audio.
+                <!-- Kotak Teks Pengumuman -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label for="ttsText" class="text-xs font-semibold text-slate-300">Teks Pengumuman (Dapat diedit bebas):</label>
+                        <button type="button" id="clearTextBtn" class="text-[11px] text-slate-400 hover:text-red-400">Kosongkan Teks</button>
+                    </div>
+                    <textarea id="ttsText" rows="6" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 outline-none leading-relaxed transition-all" placeholder="Ketik kata-kata pengumuman di sini...">Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.</textarea>
+                </div>
+
+                <!-- Pilihan Karakter Suara & Bel -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5 p-3.5 bg-slate-950/60 rounded-xl border border-slate-800">
+                    <div>
+                        <label for="voiceSelect" class="block text-xs font-semibold text-slate-300 mb-1.5">Pilihan Karakter Suara:</label>
+                        <select id="voiceSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-orange-500">
+                            <option value="Sulafat" selected>Sulafat (Wanita • Natural Standar Stasiun)</option>
+                            <option value="Aoede">Aoede (Wanita • Anggun & Formal)</option>
+                            <option value="Zephyr">Zephyr (Wanita • Jernih & Cepat)</option>
+                            <option value="Charon">Charon (Pria • Berat & Berwibawa)</option>
+                            <option value="Fenrir">Fenrir (Pria • Lantang & Tegas)</option>
+                            <option value="Puck">Puck (Wanita • Ramah & Hangat)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Pengaturan Bel Ding-Dong:</label>
+                        <div class="flex items-center justify-between gap-2">
+                            <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                                <input type="checkbox" id="enableChime" checked class="w-4 h-4 accent-orange-500 rounded cursor-pointer">
+                                <span>Putar Bel di Awal</span>
+                            </label>
+                            <button type="button" id="testChimeBtn" class="text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors">
+                                🔔 Coba Bel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Utama -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" id="playBtn" class="btn-active flex-grow py-3.5 px-6 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold rounded-xl shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 transition-all">
+                        <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
+                            <path d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69ZM72,216l144-96L72,40Z"/>
+                        </svg>
+                        <span id="playSpinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span id="playBtnText">PUTAR PENGUMUMAN</span>
+                    </button>
+
+                    <button type="button" id="stopBtn" class="hidden btn-active py-3.5 px-6 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256" fill="currentColor">
+                            <rect x="32" y="32" width="192" height="192" rx="16"/>
+                        </svg>
+                        <span>HENTIKAN</span>
+                    </button>
+                </div>
+
+                <!-- Bagian Download Audio yang sudah jadi -->
+                <div id="downloadContainer" class="hidden mt-4 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs text-slate-400">Audio selesai dibuat! Simpan file ke perangkat:</span>
+                    <div class="flex gap-2">
+                        <button type="button" id="downloadMp3Btn" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow transition-colors">
+                            📥 Download MP3
+                        </button>
+                        <a id="downloadWavBtn" href="#" download="Pengumuman_Stasiun.wav" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors">
+                            Unduh WAV
+                        </a>
                     </div>
                 </div>
 
             </section>
         </div>
+
+        <!-- Right Column: Daftar Kereta & Pengumuman Tersimpan -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+            <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col h-full">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📋</span>
+                        <h2 class="text-base font-bold text-white">Daftar Menu Kereta</h2>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Tersimpan di Browser</span>
+                </div>
+
+                <!-- Form Tambah Kereta Baru -->
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="trainNameInput" placeholder="Nama Kereta (Cth: KA Sri Tanjung)" class="flex-grow bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500">
+                    <button type="button" id="addTrainBtn" class="bg-orange-600 hover:bg-orange-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 transition-colors">
+                        + Tambah
+                    </button>
+                </div>
+
+                <!-- Container Kartu Kereta -->
+                <div id="trainList" class="flex-grow space-y-3 overflow-y-auto max-h-[560px] pr-1">
+                    <!-- Train cards dynamically loaded here -->
+                </div>
+            </section>
+        </div>
+
     </main>
 
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
+        Announcer Stasiun Ketapang • Sistem Pengumuman Audio Praktis & Otomatis
+    </footer>
 
-
+    <!-- Core Audio Engine Logic -->
     <script>
-        let db;
-        const dbName = "KetapangAnnouncerDB";
-        const storeName = "audioFiles";
-
-        function initIndexedDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(dbName, 1);
-                request.onerror = (event) => reject(event.target.error);
-                request.onsuccess = (event) => {
-                    db = event.target.result;
-                    resolve(db);
-                };
-                request.onupgradeneeded = (event) => {
-                    const database = event.target.result;
-                    if (!database.objectStoreNames.contains(storeName)) {
-                        database.createObjectStore(storeName);
-                    }
-                };
-            });
-        }
-
-        function saveAudioToIDB(id, blob) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve();
-                const transaction = db.transaction([storeName], "readwrite");
-                const store = transaction.objectStore(storeName);
-                const request = store.put(blob, id);
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function getAudioFromIDB(id) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve(null);
-                const transaction = db.transaction([storeName], "readonly");
-                const store = transaction.objectStore(storeName);
-                const request = store.get(id);
-                request.onsuccess = (e) => resolve(e.target.result);
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        function deleteAudioFromIDB(id) {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve();
-                const transaction = db.transaction([storeName], "readwrite");
-                const store = transaction.objectStore(storeName);
-                const request = store.delete(id);
-                request.onsuccess = () => resolve();
-                request.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-
-
-        let audioCtx;
-        
-        function initAudio() {
+        // --- 1. Audio Context & Bel Ding-Dong Stasiun ---
+        let audioCtx = null;
+        function getAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
+            return audioCtx;
         }
 
-        function playDingDong(speed) {
+        function playDingDong() {
             return new Promise((resolve) => {
-                initAudio();
-                const now = audioCtx.currentTime;
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
                 const freqDing = 659.25; // E5
                 const freqDong = 523.25; // C5
+                const speed = 0.75; // jeda waktu bel
 
-                function createBell(freq, startTime) {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
+                function tone(freq, start) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, startTime);
-                    
-                    gain.gain.setValueAtTime(0, startTime);
-                    gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
-                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
-                    
+                    osc.frequency.setValueAtTime(freq, start);
+                    gain.gain.setValueAtTime(0, start);
+                    gain.gain.linearRampToValueAtTime(0.85, start + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 1.4);
                     osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    
-                    osc.start(startTime);
-                    osc.stop(startTime + 2);
+                    gain.connect(ctx.destination);
+                    osc.start(start);
+                    osc.stop(start + 1.5);
                 }
 
-                createBell(freqDing, now);
-                createBell(freqDong, now + speed);
+                tone(freqDing, now);
+                tone(freqDong, now + speed);
 
-                setTimeout(resolve, (speed + 2) * 1000); 
+                setTimeout(resolve, (speed + 1.5) * 1000);
             });
         }
 
-        const speedSlider = document.getElementById('chimeSpeed');
-        const speedDisplay = document.getElementById('chimeSpeedDisplay');
-        const testChimeBtn = document.getElementById('testChimeBtn');
-
-        speedSlider.addEventListener('input', (e) => {
-            speedDisplay.textContent = e.target.value + 's';
-        });
-
-        testChimeBtn.addEventListener('click', () => {
-            testChimeBtn.disabled = true;
-            testChimeBtn.classList.add('opacity-50');
-            testChimeBtn.innerHTML = 'Memutar...';
-            playDingDong(parseFloat(speedSlider.value)).then(() => {
-                testChimeBtn.disabled = false;
-                testChimeBtn.classList.remove('opacity-50');
-                testChimeBtn.innerHTML = 'Test Suara Bel';
-            });
-        });
-
-        const VOICE_PROFILES = {
-            'Sulafat': { 
-                name: 'Sulafat',
-                gender: 'female', 
-                pitch: 1.0, 
-                rate: 1.0, 
-                desc: 'Wanita Utama & Natural (Standar Stasiun)',
-                badge: 'Wanita • Natural'
-            },
-            'Aoede': { 
-                name: 'Aoede',
-                gender: 'female', 
-                pitch: 0.88, 
-                rate: 0.92, 
-                desc: 'Wanita Formal & Anggun (Tempo Khidmat)',
-                badge: 'Wanita • Formal Alto'
-            },
-            'Zephyr': { 
-                name: 'Zephyr',
-                gender: 'female', 
-                pitch: 1.25, 
-                rate: 1.05, 
-                desc: 'Wanita Cerah & Jernih (Informasi Cepat)',
-                badge: 'Wanita • Cerah Sopran'
-            },
-            'Kore': { 
-                name: 'Kore',
-                gender: 'female', 
-                pitch: 0.95, 
-                rate: 0.98, 
-                desc: 'Wanita Tegas & Profesional',
-                badge: 'Wanita • Tegas'
-            },
-            'Puck': { 
-                name: 'Puck',
-                gender: 'female', 
-                pitch: 1.10, 
-                rate: 1.02, 
-                desc: 'Wanita Ramah & Hangat',
-                badge: 'Wanita • Ramah'
-            },
-            'Fenrir': { 
-                name: 'Fenrir',
-                gender: 'male', 
-                pitch: 0.82, 
-                rate: 1.12, 
-                desc: 'Pria Lantang & Bersemangat (Tenor)',
-                badge: 'Pria • Lantang'
-            },
-            'Charon': { 
-                name: 'Charon',
-                gender: 'male', 
-                pitch: 0.68, 
-                rate: 0.90, 
-                desc: 'Pria Dalam & Berwibawa (Bariton)',
-                badge: 'Pria • Bariton Dalam'
-            }
+        // --- 2. Template Teks Cepat ---
+        const TEMPLATES = {
+            boarding: "Mohon perhatian. Kepada seluruh penumpang kereta api Mutiara Timur, kami persilakan untuk memasuki pintu boarding. Sebelum memasuki pintu boarding, mohon persiapkan tiket dan kartu identitas asli Anda, seperti KTP, SIM, atau Paspor. Jika tiket tidak sesuai dengan identitas, maka penumpang tidak diperkenankan memasuki peron. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.",
+            arrival: "Perhatian, sesaat lagi di jalur satu akan tiba kereta api Sri Tanjung dari arah Surabaya dengan tujuan akhir Stasiun Ketapang Banyuwangi. Kepada penumpang yang akan turun, mohon periksa kembali barang bawaan Anda agar tidak tertinggal di dalam kereta. Terima kasih.",
+            departure: "Perhatian, kereta api Wijayakusuma di jalur dua tujuan akhir Stasiun Cilacap via Surabaya Gubeng sesaat lagi akan diberangkatkan. Bagi para penumpang yang belum naik, kami persilakan untuk segera naik ke atas kereta karena pintu kereta akan segera ditutup. Terima kasih.",
+            safety: "Pemberitahuan keselamatan. Kami himbau kepada seluruh pengguna jasa kereta api untuk selalu berdiri di belakang garis kuning peron saat kereta api sedang bergerak atau melintas. Jagalah selalu anak-anak Anda dan utamakan keselamatan bersama.",
+            luggage: "Mohon perhatian. Bagi seluruh penumpang yang berada di ruang tunggu dan peron Stasiun Ketapang, mohon selalu menjaga dan mengawasi barang bawaan berharga Anda. Pihak stasiun tidak bertanggung jawab atas kehilangan atau tertukarnya barang akibat kelalaian penumpang."
         };
 
-        const voiceSelect = document.getElementById('voiceSelect');
-        const savedVoice = localStorage.getItem('selected_voice_name');
-        if (savedVoice && voiceSelect) {
-            voiceSelect.value = savedVoice;
-        }
-
-        function updateVoiceBadge(val) {
-            const badgeEl = document.getElementById('activeVoiceName');
-            if (!badgeEl) return;
-            if (val.startsWith('sys:')) {
-                badgeEl.textContent = val.replace('sys:', '').substring(0, 32);
-            } else if (VOICE_PROFILES[val]) {
-                badgeEl.textContent = `${VOICE_PROFILES[val].name} (${VOICE_PROFILES[val].badge})`;
-            }
-        }
-
-        function populateBrowserVoices() {
-            if (!('speechSynthesis' in window)) return;
-            const voices = window.speechSynthesis.getVoices();
-            if (!voices || voices.length === 0) return;
-            const group = document.getElementById('browserVoicesGroup');
-            if (!group) return;
-            group.innerHTML = '';
-            
-            const idVoices = voices.filter(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
-            const otherVoices = voices.filter(v => !v.lang.startsWith('id') && !v.lang.startsWith('in'));
-            
-            [...idVoices, ...otherVoices.slice(0, 8)].forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = 'sys:' + v.name;
-                const isIndo = v.lang.startsWith('id') || v.lang.startsWith('in');
-                opt.textContent = `${v.name} (${v.lang})${isIndo ? ' ⭐ Bahasa Indonesia' : ''}`;
-                group.appendChild(opt);
-            });
-            if (savedVoice && voiceSelect) {
-                voiceSelect.value = savedVoice;
-            }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = populateBrowserVoices;
-            setTimeout(populateBrowserVoices, 300);
-        }
-
-        if (voiceSelect) {
-            updateVoiceBadge(voiceSelect.value);
-            voiceSelect.addEventListener('change', (e) => {
-                localStorage.setItem('selected_voice_name', e.target.value);
-                updateVoiceBadge(e.target.value);
-            });
-        }
-
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-        const storedKey = localStorage.getItem('gemini_api_key');
-        if (storedKey && apiKeyInput) {
-            apiKeyInput.value = storedKey;
-        }
-        if (saveApiKeyBtn && apiKeyInput) {
-            saveApiKeyBtn.addEventListener('click', () => {
-                const key = apiKeyInput.value.trim();
-                if (key) {
-                    localStorage.setItem('gemini_api_key', key);
-                    alert('Gemini API Key berhasil disimpan! Suara AI Gemini sekarang aktif konsisten di semua browser.');
-                } else {
-                    localStorage.removeItem('gemini_api_key');
-                    alert('Gemini API Key dihapus.');
+        document.querySelectorAll('.template-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                if (TEMPLATES[type]) {
+                    document.getElementById('ttsText').value = TEMPLATES[type];
                 }
             });
-        }
-
-        const tempSlider = document.getElementById('ttsTemp');
-        const tempDisplay = document.getElementById('tempDisplay');
-        const generateTtsBtn = document.getElementById('generateTtsBtn');
-        const pauseTtsBtn = document.getElementById('pauseTtsBtn');
-        const ttsText = document.getElementById('ttsText');
-        const singleSpeakerCheck = document.getElementById('singleSpeaker');
-        const downloadTtsBtn = document.getElementById('downloadTtsBtn');
-        const downloadMp3Btn = document.getElementById('downloadMp3Btn');
-        const ttsDownloadOptions = document.getElementById('ttsDownloadOptions');
-        
-        let currentPlayingAudio = null;
-        let ttsAudioContext = null;
-
-        tempSlider.addEventListener('input', (e) => {
-            tempDisplay.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
-        async function convertWavBlobToMp3Blob(wavBlob) {
-            if (wavBlob.type.includes('mp3') || wavBlob.type.includes('mpeg')) {
-                return wavBlob;
+        document.getElementById('clearTextBtn').addEventListener('click', () => {
+            document.getElementById('ttsText').value = '';
+        });
+
+        document.getElementById('testChimeBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('testChimeBtn');
+            btn.disabled = true;
+            btn.textContent = '🔊 Bunyi...';
+            await playDingDong();
+            btn.disabled = false;
+            btn.textContent = '🔔 Coba Bel';
+        });
+
+        // --- 3. PCM to WAV Converter ---
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const dataSize = pcm16.length * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            function writeString(offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        // --- 4. MP3 Conversion ---
+        async function convertToMp3(audioBlob) {
+            if (audioBlob.type.includes('mp3') || audioBlob.type.includes('mpeg')) {
+                return audioBlob;
             }
             if (typeof lamejs === 'undefined' || !lamejs.Mp3Encoder) {
-                throw new Error('Encoder MP3 (lamejs) belum termuat. Mohon periksa koneksi internet atau refresh halaman.');
+                return audioBlob;
             }
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const arrayBuffer = await wavBlob.arrayBuffer();
-            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-            
+            const ctx = getAudioContext();
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
             const channels = audioBuffer.numberOfChannels;
             const sampleRate = audioBuffer.sampleRate;
             const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, 128);
             const mp3Data = [];
             const sampleBlockSize = 1152;
-            
+
             if (channels === 1) {
                 const floatSamples = audioBuffer.getChannelData(0);
                 const int16Samples = new Int16Array(floatSamples.length);
@@ -622,1118 +363,468 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             }
             const endBuf = mp3encoder.flush();
             if (endBuf && endBuf.length > 0) mp3Data.push(endBuf);
-            
             return new Blob(mp3Data, { type: 'audio/mp3' });
         }
 
-        function pcmToWav(pcm16, sampleRate) {
-            const numChannels = 1;
-            const byteRate = sampleRate * numChannels * 2;
-            const blockAlign = numChannels * 2;
-            const dataSize = pcm16.length * 2;
-            const buffer = new ArrayBuffer(44 + dataSize);
-            const view = new DataView(buffer);
+        // --- 5. Playback Controller ---
+        let currentAudio = null;
+        let isPlaying = false;
+        let latestGeneratedBlob = null;
 
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + dataSize, true);
-            writeString(view, 8, 'WAVE');
-            
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, numChannels, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, byteRate, true);
-            view.setUint16(32, blockAlign, true);
-            view.setUint16(34, 16, true);
-            
-            writeString(view, 36, 'data');
-            view.setUint32(40, dataSize, true);
+        function setPlayingState(playing, statusText = '') {
+            isPlaying = playing;
+            const playBtn = document.getElementById('playBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const playIcon = document.getElementById('playIcon');
+            const playSpinner = document.getElementById('playSpinner');
+            const playBtnText = document.getElementById('playBtnText');
+            const onAirBadge = document.getElementById('onAirBadge');
+            const readyBadge = document.getElementById('readyBadge');
 
-            let offset = 44;
-            for (let i = 0; i < pcm16.length; i++, offset += 2) {
-                view.setInt16(offset, pcm16[i], true);
-            }
-
-            return new Blob([view], { type: 'audio/wav' });
-        }
-
-        function writeString(view, offset, string) {
-            for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
+            if (playing) {
+                playBtn.disabled = true;
+                playBtn.classList.add('opacity-75');
+                playIcon.classList.add('hidden');
+                playSpinner.classList.remove('hidden');
+                playBtnText.textContent = statusText || 'Memutar...';
+                stopBtn.classList.remove('hidden');
+                onAirBadge.classList.remove('hidden');
+                readyBadge.classList.add('hidden');
+            } else {
+                playBtn.disabled = false;
+                playBtn.classList.remove('opacity-75');
+                playIcon.classList.remove('hidden');
+                playSpinner.classList.add('hidden');
+                playBtnText.textContent = 'PUTAR PENGUMUMAN';
+                stopBtn.classList.add('hidden');
+                onAirBadge.classList.add('hidden');
+                readyBadge.classList.remove('hidden');
             }
         }
 
-        function parseAudioFromResponse(resultData) {
-            const part = resultData?.candidates?.[0]?.content?.parts?.[0];
-            const audioData = part?.inlineData?.data;
-            const mimeType = part?.inlineData?.mimeType || '';
-
-            if (audioData && (mimeType.startsWith("audio/") || mimeType === '')) {
-                const binaryString = atob(audioData);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
-
-                if (mimeType.includes("mp3") || mimeType.includes("mpeg")) {
-                    const mp3Blob = new Blob([bytes], { type: 'audio/mp3' });
-                    return URL.createObjectURL(mp3Blob);
-                }
-                if (mimeType.includes("wav")) {
-                    const wavBlob = new Blob([bytes], { type: 'audio/wav' });
-                    return URL.createObjectURL(wavBlob);
-                }
-
-                // Default: Raw PCM16 (e.g. from Gemini audio/l16)
-                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
-                const pcm16 = new Int16Array(bytes.buffer);
-                const wavBlob = pcmToWav(pcm16, sampleRate);
-                return URL.createObjectURL(wavBlob);
+        function stopAllAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
             }
-            return null;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            setPlayingState(false);
         }
 
-        async function fetchGeminiTTS(text, voiceName) {
-            // 1. Try server proxy first (/api/tts)
+        document.getElementById('stopBtn').addEventListener('click', stopAllAudio);
+
+        async function fetchAudioFromApi(text, voiceName) {
             try {
-                const response = await fetch('/api/tts', {
+                const res = await fetch('/api/tts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text, voiceName })
                 });
-                if (response.ok) {
-                    const resultData = await response.json();
-                    const audioUrl = parseAudioFromResponse(resultData);
-                    if (audioUrl) return audioUrl;
-                }
-            } catch (e) {
-                console.warn("Server TTS proxy not available (e.g. GitHub Pages static host), checking Gemini API Key or client audio...");
-            }
+                if (!res.ok) return null;
+                const data = await res.json();
+                const part = data?.candidates?.[0]?.content?.parts?.[0];
+                const rawBase64 = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || 'audio/mp3';
 
-            // 2. If server proxy failed (e.g. on GitHub Pages static host), check for user-configured API key
-            let apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
-                return null; // Return null to smoothly use client-side Indonesian audio
-            }
+                if (rawBase64) {
+                    const binary = atob(rawBase64);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 
-            // 3. Call Gemini API from client directly (Google Generative Language API supports CORS)
-            try {
-                const payload = {
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                {
-                                    text: text,
-                                    speechMetadata: {
-                                        style: "Pengumuman stasiun kereta api yang jelas, ramah, dan artikulatif"
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                    generationConfig: {
-                        responseModalities: ["AUDIO"],
-                        speechConfig: {
-                            voiceConfig: {
-                                prebuiltVoiceConfig: { voiceName: voiceName || "Sulafat" }
-                            }
-                        }
+                    if (mimeType.includes('mp3') || mimeType.includes('mpeg')) {
+                        return new Blob([bytes], { type: 'audio/mp3' });
                     }
-                };
-
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite-tts:generateContent?key=${apiKey}`;
-                const clientResponse = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (clientResponse.ok) {
-                    const resultData = await clientResponse.json();
-                    const audioUrl = parseAudioFromResponse(resultData);
-                    if (audioUrl) return audioUrl;
-                } else {
-                    console.warn("Direct client Gemini TTS returned status:", clientResponse.status);
+                    if (mimeType.includes('wav')) {
+                        return new Blob([bytes], { type: 'audio/wav' });
+                    }
+                    const pcm16 = new Int16Array(bytes.buffer);
+                    return pcmToWav(pcm16, 24000);
                 }
-            } catch (clientErr) {
-                console.warn("Direct client Gemini API error:", clientErr);
+            } catch (err) {
+                console.warn('API TTS Proxy tidak dapat diakses:', err);
             }
-
             return null;
         }
 
-        function splitTextIntoTtsChunks(text) {
-            const sentences = text.match(/[^.!?\n,;:]+[.!?\n,;:]*/g) || [text];
-            const chunks = [];
+        // Suara fallback langsung jernih bahasa Indonesia
+        async function playFallbackAudioDirectly(text) {
+            const sentences = text.match(/[^.!?\n,]+[.!?\n,]*/g) || [text];
             for (const s of sentences) {
-                let clean = s.trim();
-                while (clean.length > 140) {
-                    let sliceIdx = clean.lastIndexOf(' ', 140);
-                    if (sliceIdx <= 0) sliceIdx = 140;
-                    chunks.push(clean.substring(0, sliceIdx).trim());
-                    clean = clean.substring(sliceIdx).trim();
-                }
-                if (clean) chunks.push(clean);
-            }
-            return chunks.length > 0 ? chunks : [text];
-        }
-
-        async function playIndonesianTtsClientSide(text, voiceKey) {
-            const chunks = splitTextIntoTtsChunks(text);
-            const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
-            const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
-            const targetRate = Math.max(0.75, Math.min(1.35, userSpeed * (profile.rate || 1.0)));
-
-            if (downloadTtsBtn) {
-                const sampleChunk = chunks[0] || text.substring(0, 140);
-                const directUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(sampleChunk)}`;
-                downloadTtsBtn.href = directUrl;
-                downloadTtsBtn.download = `Pengumuman_Stasiun_${Date.now()}.mp3`;
-                downloadTtsBtn.target = '_blank';
-                if (ttsDownloadOptions) ttsDownloadOptions.classList.remove('hidden');
-            }
-
-            for (let i = 0; i < chunks.length; i++) {
-                if (!isTtsPlaying) break;
-                const chunk = chunks[i];
-                if (!chunk) continue;
-                const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-                
+                if (!isPlaying) break;
+                const clean = s.trim();
+                if (!clean) continue;
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(clean.substring(0, 150))}`;
                 await new Promise((resolve) => {
                     const audio = new Audio(url);
-                    audio.playbackRate = targetRate;
-                    currentPlayingAudio = audio;
-
-                    // Preload next chunk for gapless natural flow
-                    if (i + 1 < chunks.length) {
-                        const nextUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(chunks[i + 1])}`;
-                        const preloader = new Audio(nextUrl);
-                        preloader.preload = 'auto';
-                    }
-
-                    audio.onended = () => {
-                        currentPlayingAudio = null;
-                        resolve();
+                    currentAudio = audio;
+                    audio.onended = () => resolve();
+                    audio.onerror = () => {
+                        // Fallback ke browser speech jika url terhalang
+                        if ('speechSynthesis' in window) {
+                            const utt = new SpeechSynthesisUtterance(clean);
+                            utt.lang = 'id-ID';
+                            utt.onend = resolve;
+                            utt.onerror = resolve;
+                            window.speechSynthesis.speak(utt);
+                        } else {
+                            resolve();
+                        }
                     };
-                    audio.onerror = (e) => {
-                        console.warn("Direct audio playback failed for chunk, falling back to speech synthesis:", e);
-                        playSpeechSynthesisUtterance(chunk, voiceKey).then(resolve).catch(resolve);
-                    };
-
-                    const playPromise = audio.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch((err) => {
-                            console.warn("Direct audio play error:", err);
-                            playSpeechSynthesisUtterance(chunk, voiceKey).then(resolve).catch(resolve);
-                        });
-                    }
+                    audio.play().catch(() => resolve());
                 });
             }
         }
 
-        let isTtsPlaying = false;
-        let currentBrowserUtterance = null;
-
-        pauseTtsBtn.addEventListener('click', () => {
-            if (currentPlayingAudio) {
-                currentPlayingAudio.pause();
-                currentPlayingAudio.currentTime = 0;
-                currentPlayingAudio = null;
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            resetTtsPlayState();
-        });
-
-        function resetTtsPlayState() {
-            isTtsPlaying = false;
-            generateTtsBtn.disabled = false;
-            generateTtsBtn.classList.remove('opacity-50');
-            document.getElementById('ttsIcon').classList.remove('hidden');
-            document.getElementById('ttsLoading').classList.add('hidden');
-            document.getElementById('ttsBtnText').textContent = 'Play TTS (dengan Bel)';
-            pauseTtsBtn.classList.add('hidden');
-            document.querySelectorAll('.play-audio-btn').forEach(b => {
-                b.dataset.isPlaying = 'false';
-                const t = b.querySelector('.play-text');
-                if (t) t.textContent = 'Play';
-                b.classList.remove('bg-red-600', 'hover:bg-red-500');
-                b.classList.add('bg-blue-600', 'hover:bg-blue-500');
-            });
-        }
-
-        async function playAnnouncerAudio(audioUrl, voiceKey) {
-            const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
-            const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
-            
-            const audio = new Audio();
-            audio.src = audioUrl;
-            const isLocalOrBlob = audioUrl.startsWith('blob:') || audioUrl.startsWith('/') || audioUrl.startsWith(window.location.origin);
-            if (isLocalOrBlob) {
-                audio.crossOrigin = "anonymous";
-            }
-            audio.playbackRate = Math.max(0.7, Math.min(1.4, userSpeed * profile.rate));
-            currentPlayingAudio = audio;
-
-            if (isLocalOrBlob) {
-                try {
-                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                    if (!ttsAudioContext || ttsAudioContext.state === 'closed') {
-                        ttsAudioContext = new AudioContextClass();
-                    }
-                    if (ttsAudioContext.state === 'suspended') {
-                        await ttsAudioContext.resume();
-                    }
-
-                    const source = ttsAudioContext.createMediaElementSource(audio);
-                    const lowFilter = ttsAudioContext.createBiquadFilter();
-                    const highFilter = ttsAudioContext.createBiquadFilter();
-
-                    if (profile.gender === 'male') {
-                        // Deep male voice boost (boost 220Hz bass, soften high trebles)
-                        lowFilter.type = 'lowshelf';
-                        lowFilter.frequency.value = 220;
-                        lowFilter.gain.value = voiceKey === 'Charon' ? 8.0 : 4.5;
-
-                        highFilter.type = 'highshelf';
-                        highFilter.frequency.value = 3200;
-                        highFilter.gain.value = voiceKey === 'Charon' ? -4.0 : -1.0;
-                    } else if (voiceKey === 'Zephyr') {
-                        // Bright, clear high female tone
-                        lowFilter.type = 'highpass';
-                        lowFilter.frequency.value = 140;
-                        highFilter.type = 'highshelf';
-                        highFilter.frequency.value = 3200;
-                        highFilter.gain.value = 5.0;
-                    } else if (voiceKey === 'Aoede') {
-                        // Formal, dignified female tone
-                        lowFilter.type = 'peaking';
-                        lowFilter.frequency.value = 650;
-                        lowFilter.gain.value = 3.5;
-                        highFilter.type = 'highshelf';
-                        highFilter.frequency.value = 4000;
-                        highFilter.gain.value = -1.5;
-                    } else {
-                        lowFilter.type = 'allpass';
-                        highFilter.type = 'allpass';
-                    }
-
-                    source.connect(lowFilter);
-                    lowFilter.connect(highFilter);
-                    highFilter.connect(ttsAudioContext.destination);
-                } catch (webAudioErr) {
-                    console.warn("WebAudio filter not applied:", webAudioErr);
-                }
+        // Tombol Putar Pengumuman
+        document.getElementById('playBtn').addEventListener('click', async () => {
+            const text = document.getElementById('ttsText').value.trim();
+            if (!text) {
+                alert('Silakan ketik atau pilih template pengumuman terlebih dahulu.');
+                return;
             }
 
-            await new Promise((resolve, reject) => {
-                audio.onended = () => {
-                    currentPlayingAudio = null;
-                    resolve();
-                };
-                audio.onerror = reject;
-                const playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(reject);
-                }
-            });
-        }
-
-        async function playSpeechSynthesisUtterance(text, voiceKey) {
-            return new Promise((resolve, reject) => {
-                if (!('speechSynthesis' in window)) {
-                    reject(new Error('Browser Speech Synthesis tidak didukung pada perangkat ini.'));
-                    return;
-                }
-
-                window.speechSynthesis.cancel();
-
-                const utterance = new SpeechSynthesisUtterance(text);
-                const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
-                const allVoices = window.speechSynthesis.getVoices();
-
-                if (voiceKey && voiceKey.startsWith('sys:')) {
-                    const rawName = voiceKey.replace('sys:', '');
-                    const sysVoice = allVoices.find(v => v.name === rawName || v.voiceURI === rawName);
-                    if (sysVoice) {
-                        utterance.voice = sysVoice;
-                        utterance.lang = sysVoice.lang;
-                    }
-                    utterance.rate = userSpeed;
-                    utterance.pitch = 1.0;
-                } else {
-                    const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
-                    utterance.rate = Math.max(0.6, Math.min(1.5, userSpeed * profile.rate));
-                    utterance.pitch = profile.pitch;
-
-                    const idVoices = allVoices.filter(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
-                    const pool = idVoices.length > 0 ? idVoices : allVoices;
-
-                    let matchedVoice = null;
-
-                    // Match gender-specific Indonesian voice
-                    if (profile.gender === 'male') {
-                        matchedVoice = pool.find(v => {
-                            const n = v.name.toLowerCase();
-                            return n.includes('male') || n.includes('pria') || n.includes('andika') || n.includes('david') || n.includes('standard-b') || n.includes('wavenet-b');
-                        });
-                    } else {
-                        matchedVoice = pool.find(v => {
-                            const n = v.name.toLowerCase();
-                            return n.includes('female') || n.includes('wanita') || n.includes('gadis') || n.includes('damayanti') || n.includes('standard-a') || n.includes('wavenet-a');
-                        });
-                    }
-
-                    if (!matchedVoice && idVoices.length > 0) {
-                        matchedVoice = idVoices[0];
-                    }
-
-                    if (matchedVoice) {
-                        utterance.voice = matchedVoice;
-                        utterance.lang = matchedVoice.lang;
-                    } else {
-                        utterance.lang = 'id-ID';
-                    }
-                }
-
-                utterance.onend = () => {
-                    currentBrowserUtterance = null;
-                    resolve();
-                };
-                utterance.onerror = (e) => {
-                    currentBrowserUtterance = null;
-                    reject(e);
-                };
-
-                currentBrowserUtterance = utterance;
-                window.speechSynthesis.speak(utterance);
-            });
-        }
-
-        generateTtsBtn.addEventListener('click', async () => {
-            const text = ttsText.value.trim();
-            if (!text) return;
-
-            if (singleSpeakerCheck.checked && currentPlayingAudio) {
-                currentPlayingAudio.pause();
-                currentPlayingAudio.currentTime = 0;
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-
-            isTtsPlaying = true;
-            generateTtsBtn.disabled = true;
-            generateTtsBtn.classList.add('opacity-50');
-            if (ttsDownloadOptions) ttsDownloadOptions.classList.add('hidden');
-            document.getElementById('ttsIcon').classList.add('hidden');
-            document.getElementById('ttsLoading').classList.remove('hidden');
-            document.getElementById('ttsBtnText').textContent = 'Memutar Bel...';
-            pauseTtsBtn.classList.remove('hidden');
+            stopAllAudio();
+            setPlayingState(true, 'Menyiapkan...');
 
             try {
-                const speed = parseFloat(speedSlider.value);
-                await playDingDong(speed);
-
-                if (!isTtsPlaying) return;
-
-                document.getElementById('ttsLoading').classList.add('hidden');
-                document.getElementById('ttsIcon').classList.remove('hidden');
-                document.getElementById('ttsBtnText').textContent = 'Memutar Pengumuman (Pause/Stop)...';
-
-                let audioUrl = null;
-                const chosenVoice = voiceSelect ? voiceSelect.value : 'Sulafat';
-
-                // If user selected a specific system/browser voice
-                if (chosenVoice.startsWith('sys:')) {
-                    await playSpeechSynthesisUtterance(text, chosenVoice);
-                    return;
+                // 1. Putar Bel Ding-Dong jika dicentang
+                const withChime = document.getElementById('enableChime').checked;
+                if (withChime) {
+                    setPlayingState(true, 'Membunyikan Bel...');
+                    await playDingDong();
                 }
 
-                try {
-                    audioUrl = await fetchGeminiTTS(text, chosenVoice);
-                } catch (apiErr) {
-                    console.warn("TTS fetch returned error:", apiErr);
-                }
+                if (!isPlaying) return;
 
-                if (audioUrl) {
-                    try {
-                        const blobRes = await fetch(audioUrl);
-                        currentGeneratedBlob = await blobRes.blob();
-                        const saveToDriveBtn = document.getElementById('saveToDriveBtn');
-                        if (saveToDriveBtn) saveToDriveBtn.classList.remove('hidden');
-                    } catch (e) {
-                        console.warn("Could not capture blob for Drive:", e);
-                    }
+                // 2. Ambil Suara TTS
+                setPlayingState(true, 'Sedang Berbicara...');
+                const voiceName = document.getElementById('voiceSelect').value;
+                const audioBlob = await fetchAudioFromApi(text, voiceName);
 
-                    if (downloadTtsBtn) {
-                        downloadTtsBtn.href = audioUrl;
-                        const ext = currentGeneratedBlob?.type?.includes('mp3') ? 'mp3' : 'wav';
-                        downloadTtsBtn.download = `Pengumuman_TTS_${Date.now()}.${ext}`;
-                    }
-                    if (ttsDownloadOptions) {
-                        ttsDownloadOptions.classList.remove('hidden');
-                    }
+                if (audioBlob) {
+                    latestGeneratedBlob = audioBlob;
+                    const blobUrl = URL.createObjectURL(audioBlob);
+                    
+                    // Setup Tombol Download
+                    const dlContainer = document.getElementById('downloadContainer');
+                    const dlWav = document.getElementById('downloadWavBtn');
+                    dlWav.href = blobUrl;
+                    dlContainer.classList.remove('hidden');
 
-                    await playAnnouncerAudio(audioUrl, chosenVoice);
+                    const audio = new Audio(blobUrl);
+                    currentAudio = audio;
+
+                    await new Promise((resolve, reject) => {
+                        audio.onended = resolve;
+                        audio.onerror = reject;
+                        audio.play().catch(reject);
+                    });
                 } else {
-                    // Running on GitHub Pages or static web without server:
-                    // Play natural Indonesian speech audio directly client-side so it is identical to AI Studio preview!
-                    console.log("Playing natural Indonesian audio client-side (GitHub Pages mode)...");
-                    await playIndonesianTtsClientSide(text, chosenVoice);
+                    // Fallback Bahasa Indonesia
+                    await playFallbackAudioDirectly(text);
                 }
-
-            } catch (error) {
-                console.error(error);
-                alert("Terjadi kesalahan saat memproses suara: " + error.message);
+            } catch (err) {
+                console.error("Kesalahan audio:", err);
             } finally {
-                resetTtsPlayState();
-                currentPlayingAudio = null;
+                setPlayingState(false);
             }
         });
 
-        if (downloadMp3Btn) {
-            downloadMp3Btn.addEventListener('click', async () => {
-                if (!currentGeneratedBlob) {
-                    alert('Belum ada file audio TTS yang dihasilkan.');
-                    return;
-                }
-                const originalHtml = downloadMp3Btn.innerHTML;
-                try {
-                    downloadMp3Btn.disabled = true;
-                    downloadMp3Btn.innerHTML = `
-                        <div class="spinner w-3.5 h-3.5 border-white"></div>
-                        <span>Mengonversi ke MP3...</span>
-                    `;
-                    const mp3Blob = await convertWavBlobToMp3Blob(currentGeneratedBlob);
-                    const mp3Url = URL.createObjectURL(mp3Blob);
-                    const a = document.createElement('a');
-                    a.href = mp3Url;
-                    const safeName = (ttsText.value.trim().substring(0, 20).replace(/[^a-zA-Z0-9]/g, '_')) || 'Pengumuman_Stasiun';
-                    a.download = `Pengumuman_${safeName}_${Date.now()}.mp3`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(mp3Url), 15000);
-                } catch (e) {
-                    console.error("Gagal convert MP3:", e);
-                    alert("Gagal mengonversi ke format MP3: " + e.message);
-                } finally {
-                    downloadMp3Btn.disabled = false;
-                    downloadMp3Btn.innerHTML = originalHtml;
-                }
+        // Download MP3
+        document.getElementById('downloadMp3Btn').addEventListener('click', async () => {
+            if (!latestGeneratedBlob) {
+                alert('Belum ada file suara yang diputar.');
+                return;
+            }
+            const btn = document.getElementById('downloadMp3Btn');
+            btn.textContent = '⏳ Mengonversi...';
+            btn.disabled = true;
+
+            try {
+                const mp3Blob = await convertToMp3(latestGeneratedBlob);
+                const url = URL.createObjectURL(mp3Blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Pengumuman_Stasiun_${Date.now()}.mp3`;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+            } catch (e) {
+                alert('Gagal mendownload MP3: ' + e.message);
+            } finally {
+                btn.textContent = '📥 Download MP3';
+                btn.disabled = false;
+            }
+        });
+
+        // --- 6. Manajemen Menu Kereta (IndexedDB Simpel) ---
+        let db = null;
+        function initDB() {
+            return new Promise((resolve) => {
+                const req = indexedDB.open("StasiunKetapangDB", 1);
+                req.onupgradeneeded = (e) => {
+                    const d = e.target.result;
+                    if (!d.objectStoreNames.contains("audioList")) {
+                        d.createObjectStore("audioList");
+                    }
+                };
+                req.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                req.onerror = () => resolve(null);
             });
         }
 
-        let trains = [];
-        const trainsContainer = document.getElementById('trainsContainer');
-        const emptyState = document.getElementById('emptyTrainState');
-        const newTrainNameInput = document.getElementById('newTrainName');
+        function saveAudioFile(id, blob) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                const tx = db.transaction("audioList", "readwrite");
+                tx.objectStore("audioList").put(blob, id);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => resolve();
+            });
+        }
 
-        function saveTrainsMetadata() {
-            const storableTrains = trains.map(t => ({
-                id: t.id,
-                name: t.name,
-                announcements: t.announcements.map(a => ({
-                    id: a.id,
-                    name: a.name,
-                    fileName: a.fileName
-                }))
-            }));
-            localStorage.setItem('ketapang_trains_meta', JSON.stringify(storableTrains));
+        function getAudioFile(id) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                const tx = db.transaction("audioList", "readonly");
+                const req = tx.objectStore("audioList").get(id);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        function deleteAudioFile(id) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                const tx = db.transaction("audioList", "readwrite");
+                tx.objectStore("audioList").delete(id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        // Data Kereta Default jika baru pertama kali buka
+        const DEFAULT_TRAINS = [
+            { id: "tr-mutiara", name: "KA Mutiara Timur", audios: [] },
+            { id: "tr-sritanjung", name: "KA Sri Tanjung", audios: [] },
+            { id: "tr-wijaya", name: "KA Wijayakusuma", audios: [] },
+            { id: "tr-blambangan", name: "KA Blambangan Ekspres", audios: [] }
+        ];
+
+        let trainList = [];
+
+        function saveTrainsToStorage() {
+            localStorage.setItem("ketapang_trains_v2", JSON.stringify(trainList));
         }
 
         async function loadTrains() {
-            try {
-                await initIndexedDB();
-                const meta = localStorage.getItem('ketapang_trains_meta');
-                if (meta) {
-                    trains = JSON.parse(meta);
-                    for (const train of trains) {
-                        for (const ann of train.announcements) {
-                            const blob = await getAudioFromIDB(ann.id);
-                            if (blob) {
-                                ann.fileUrl = URL.createObjectURL(blob);
-                            }
-                        }
-                    }
+            await initDB();
+            const stored = localStorage.getItem("ketapang_trains_v2");
+            if (stored) {
+                try {
+                    trainList = JSON.parse(stored);
+                } catch (e) {
+                    trainList = DEFAULT_TRAINS;
                 }
-                renderTrains();
-            } catch (err) {
-                console.error("Error loading trains from IndexedDB:", err);
+            } else {
+                trainList = DEFAULT_TRAINS;
+                saveTrainsToStorage();
             }
+            renderTrainCards();
         }
 
-        loadTrains();
+        function renderTrainCards() {
+            const container = document.getElementById('trainList');
+            container.innerHTML = '';
 
-        function generateId() { return Math.random().toString(36).substr(2, 9); }
-
-
-
-        document.getElementById('addTrainBtn').addEventListener('click', () => {
-            const name = newTrainNameInput.value.trim();
-            if (name) {
-                trains.push({ id: generateId(), name: name, announcements: [] });
-                newTrainNameInput.value = '';
-                saveTrainsMetadata();
-                renderTrains();
-            }
-        });
-
-        trainsContainer.addEventListener('click', async (e) => {
-            const target = e.target.closest('button');
-            if (!target) return;
-
-            const trainId = target.dataset.trainId;
-            const train = trains.find(t => t.id === trainId);
-            if (!train) return;
-            
-            if (target.classList.contains('add-announcement-btn')) {
-                const nameInput = document.querySelector(`.announcement-name[data-train-id="${trainId}"]`);
-                const fileInput = document.querySelector(`.announcement-file[data-train-id="${trainId}"]`);
-                
-                const name = nameInput.value.trim();
-                const file = fileInput.files[0];
-
-                if (name && file) {
-                    target.disabled = true;
-                    target.textContent = 'Menyimpan...';
-
-                    const annId = generateId();
-                    await saveAudioToIDB(annId, file);
-
-                    const fileUrl = URL.createObjectURL(file);
-                    train.announcements.push({
-                        id: annId,
-                        name: name,
-                        fileUrl: fileUrl,
-                        fileName: file.name
-                    });
-
-                    saveTrainsMetadata();
-                    renderTrains();
-                    target.disabled = false;
-                } else {
-                    alert("Harap isi nama pengumuman dan pilih file audio (.mp3, .wav)."); 
-                }
-            }
-
-            if (target.classList.contains('play-audio-btn')) {
-                const annId = target.dataset.annId;
-                const ann = train.announcements.find(a => a.id === annId);
-                
-                if (ann) {
-                    const btnText = target.querySelector('.play-text');
-                    
-                    if (currentPlayingAudio && target.dataset.isPlaying === 'true') {
-                        currentPlayingAudio.pause();
-                        currentPlayingAudio.currentTime = 0;
-                        currentPlayingAudio = null;
-                        target.dataset.isPlaying = 'false';
-                        btnText.textContent = 'Play';
-                        target.classList.remove('bg-red-600', 'hover:bg-red-500');
-                        target.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                        pauseTtsBtn.classList.add('hidden');
-                        return;
-                    }
-
-                    if (currentPlayingAudio) {
-                        currentPlayingAudio.pause();
-                        currentPlayingAudio.currentTime = 0;
-                        currentPlayingAudio = null;
-                    }
-                    resetTtsPlayState();
-
-                    target.disabled = true;
-                    btnText.textContent = 'Bel...';
-                    pauseTtsBtn.classList.add('hidden');
-                    await playDingDong(parseFloat(speedSlider.value));
-
-                    btnText.textContent = 'Memutar...';
-                    const audio = new Audio(ann.fileUrl);
-                    currentPlayingAudio = audio;
-                    target.disabled = false;
-                    target.dataset.isPlaying = 'true';
-                    btnText.textContent = 'Pause';
-                    target.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-                    target.classList.add('bg-red-600', 'hover:bg-red-500');
-
-                    audio.play();
-
-                    audio.onended = () => {
-                        target.dataset.isPlaying = 'false';
-                        btnText.textContent = 'Play';
-                        target.classList.remove('bg-red-600', 'hover:bg-red-500');
-                        target.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                        if (currentPlayingAudio === audio) currentPlayingAudio = null;
-                        pauseTtsBtn.classList.add('hidden');
-                    };
-                    audio.onerror = () => {
-                        target.dataset.isPlaying = 'false';
-                        btnText.textContent = 'Error';
-                        setTimeout(() => {
-                            btnText.textContent = 'Play';
-                            target.classList.remove('bg-red-600', 'hover:bg-red-500');
-                            target.classList.add('bg-blue-600', 'hover:bg-blue-500');
-                        }, 2000);
-                        if (currentPlayingAudio === audio) currentPlayingAudio = null;
-                        pauseTtsBtn.classList.add('hidden');
-                    };
-                }
-            }
-            
-            if(target.classList.contains('delete-train-btn')) {
-                for (const ann of train.announcements) {
-                    await deleteAudioFromIDB(ann.id);
-                }
-                trains = trains.filter(t => t.id !== trainId);
-                saveTrainsMetadata();
-                renderTrains();
-            }
-        });
-
-        function renderTrains() {
-            if (trains.length === 0) {
-                emptyState.style.display = 'block';
-                const currentCards = trainsContainer.querySelectorAll('.train-card');
-                currentCards.forEach(c => c.remove());
+            if (trainList.length === 0) {
+                container.innerHTML = `<div class="text-center text-xs text-slate-500 py-8">Belum ada daftar kereta. Tambahkan nama kereta di atas.</div>`;
                 return;
             }
-            
-            emptyState.style.display = 'none';
-            trainsContainer.innerHTML = ''; 
 
-            trains.forEach(train => {
+            trainList.forEach(t => {
                 const card = document.createElement('div');
-                card.className = 'train-card bg-slate-800/80 border border-slate-600 rounded-xl overflow-hidden';
+                card.className = "bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-3";
                 
-                let announcementsHtml = train.announcements.length === 0 
-                    ? `<div class="text-xs text-slate-500 italic p-3 text-center bg-slate-900/50 rounded-lg border border-dashed border-slate-700">Belum ada file pengumuman.</div>`
-                    : train.announcements.map(ann => `
-                        <div class="flex items-center justify-between bg-slate-700/40 p-3 rounded-lg mb-2 border border-slate-600/50">
-                            <div class="flex flex-col overflow-hidden pr-2">
-                                <span class="text-sm font-semibold text-slate-200 truncate">${ann.name}</span>
-                                <span class="text-xs text-slate-400 truncate">${ann.fileName}</span>
-                            </div>
-                            <button data-train-id="${train.id}" data-ann-id="${ann.id}" data-is-playing="false" class="play-audio-btn shrink-0 btn-press bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold shadow-md min-w-[85px] justify-center transition-colors">
-                                <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 256 256"><path fill="currentColor" d="M228.23,134.69l-144,96A16,16,0,0,1,56,216V40a16,16,0,0,1,24.23-13.31l144,96A16,16,0,0,1,228.23,134.69Z"></path></svg>
-                                <span class="play-text">Play</span>
+                let audiosHtml = t.audios.map((a, idx) => `
+                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg text-xs">
+                        <span class="font-medium text-slate-200 truncate pr-2">🎵 ${a.name}</span>
+                        <div class="flex gap-1.5 shrink-0">
+                            <button type="button" class="play-train-audio-btn px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-medium text-[11px]" data-train-id="${t.id}" data-audio-id="${a.id}">
+                                ▶ Putar
+                            </button>
+                            <button type="button" class="del-train-audio-btn px-2 py-1 text-slate-400 hover:text-red-400 text-[11px]" data-train-id="${t.id}" data-audio-id="${a.id}">
+                                ✕
                             </button>
                         </div>
-                    `).join('');
+                    </div>
+                `).join('');
+
+                if (t.audios.length === 0) {
+                    audiosHtml = `<div class="text-[11px] text-slate-500 italic text-center py-2 border border-dashed border-slate-800 rounded-lg">Belum ada file audio khusus.</div>`;
+                }
 
                 card.innerHTML = `
-                    <div class="bg-slate-700/50 p-4 border-b border-slate-600 flex justify-between items-center">
+                    <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256" class="text-orange-400"><path fill="currentColor" d="M176,16H80A48.05,48.05,0,0,0,32,64v96a48.05,48.05,0,0,0,48,48v16a8,8,0,0,0,16,0V208h64v16a8,8,0,0,0,16,0V208a48.05,48.05,0,0,0,48-48V64A48.05,48.05,0,0,0,176,16ZM80,32h96a32,32,0,0,1,32,32V80H48V64A32,32,0,0,1,80,32Z"></path></svg>
-                            <h3 class="font-bold text-slate-100 uppercase tracking-wide">KA ${train.name}</h3>
+                            <span class="text-sm">🚆</span>
+                            <span class="font-bold text-xs uppercase tracking-wide text-orange-400">${t.name}</span>
                         </div>
-                        <button data-train-id="${train.id}" class="delete-train-btn text-slate-400 hover:text-red-400 p-1 bg-slate-800 rounded-md transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256" class="pointer-events-none"><path fill="currentColor" d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                        <button type="button" class="del-train-btn text-[11px] text-slate-400 hover:text-red-400" data-train-id="${t.id}">Hapus Kereta</button>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        ${audiosHtml}
+                    </div>
+
+                    <!-- Upload Audio Baru -->
+                    <div class="pt-2 border-t border-slate-800/80 flex flex-col gap-2">
+                        <div class="flex gap-2">
+                            <input type="text" placeholder="Nama Suara (Cth: Kedatangan)" class="audio-name-input flex-grow bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-orange-500">
+                            <label class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-medium cursor-pointer shrink-0 border border-slate-700">
+                                <span>Pilih File</span>
+                                <input type="file" accept="audio/*" class="audio-file-input hidden">
+                            </label>
+                        </div>
+                        <button type="button" class="save-audio-btn w-full py-1.5 bg-slate-800 hover:bg-orange-600 hover:text-white text-slate-300 text-[11px] font-semibold rounded transition-colors" data-train-id="${t.id}">
+                            + Simpan Audio Kereta
                         </button>
                     </div>
-                    
-                    <div class="p-4 bg-slate-800/40">
-                        <div class="flex flex-col xl:flex-row gap-2 mb-4 bg-slate-900/80 p-3 rounded-lg border border-slate-700 items-start xl:items-center">
-                            <input type="text" data-train-id="${train.id}" class="announcement-name w-full xl:w-1/3 input-field rounded-md px-3 py-2 text-xs font-medium" placeholder="Nama Menu (Cth: Kedatangan)">
-                            <input type="file" data-train-id="${train.id}" accept=".mp3, .wav, audio/*" class="announcement-file w-full xl:w-auto flex-grow text-xs text-slate-400 file:cursor-pointer file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600">
-                            <button data-train-id="${train.id}" class="add-announcement-btn w-full xl:w-auto shrink-0 bg-slate-600 hover:bg-slate-500 text-white px-3 py-2 rounded-md text-xs font-bold transition-colors">
-                                + Tambah Ke Menu
-                            </button>
-                        </div>
-
-                        <div class="space-y-2">
-                            ${announcementsHtml}
-                        </div>
-                    </div>
                 `;
-                trainsContainer.appendChild(card);
+
+                container.appendChild(card);
             });
         }
 
-        // Google Drive Integration
-        let tokenClient;
-        let gDriveAccessToken = localStorage.getItem('gdrive_access_token');
-        let currentGeneratedBlob = null;
-
-        const DEFAULT_DRIVE_CLIENT_ID = '235562441762-83aja4rl7550uh0apadatjo5mfj64fj6.apps.googleusercontent.com';
-
-        function getDriveClientId() {
-            return localStorage.getItem('gdrive_client_id') || DEFAULT_DRIVE_CLIENT_ID;
-        }
-
-        function initGoogleDrive() {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-                const clientId = getDriveClientId();
-                const customInp = document.getElementById('customDriveClientId');
-                if (customInp && !customInp.value) {
-                    customInp.value = clientId;
-                }
-
-                try {
-                    tokenClient = google.accounts.oauth2.initTokenClient({
-                        client_id: clientId,
-                        scope: 'https://www.googleapis.com/auth/drive.file',
-                        callback: (response) => {
-                            if (response && response.access_token) {
-                                gDriveAccessToken = response.access_token;
-                                localStorage.setItem('gdrive_access_token', gDriveAccessToken);
-                                const st = document.getElementById('driveStatus');
-                                if (st) {
-                                    st.textContent = 'Terhubung ke Google Drive';
-                                    st.className = 'text-[11px] text-green-400 font-medium';
-                                }
-                                const connectBtn = document.getElementById('connectDriveBtn');
-                                if (connectBtn) connectBtn.textContent = 'Drive Terhubung';
-                                const cont = document.getElementById('driveFilesContainer');
-                                if (cont) cont.classList.remove('hidden');
-                                loadDriveFiles();
-                            } else if (response && response.error) {
-                                if (response.error === 'access_denied' || response.error === 'popup_closed_by_user') {
-                                    console.log('Permintaan otorisasi Google Drive dibatalkan pengguna.');
-                                    return;
-                                }
-                                console.warn('OAuth token notice:', response);
-                                alert(`Gagal menghubungkan Google Drive: ${response.error_description || response.error}\n\nJika menggunakan GitHub Pages, pastikan URL origin (https://${window.location.hostname}) telah didaftarkan pada Authorized JavaScript Origins di Google Cloud Console.`);
-                            }
-                        },
-                        error_callback: (err) => {
-                            if (err && (err.type === 'popup_closed' || (err.message && err.message.toLowerCase().includes('closed')))) {
-                                console.log('Popup otentikasi Google Drive ditutup.');
-                                return;
-                            }
-                            if (err && err.type === 'popup_failed_to_open') {
-                                alert('Popup Google diblokir oleh browser. Mohon izinkan pop-up (Allow popups) untuk situs ini di peramban Anda.');
-                                return;
-                            }
-                            console.warn('OAuth error notice:', err);
-                            alert(`Error OAuth Google: ${err?.message || 'Client ID tidak valid.'}\n\nSilakan periksa OAuth Client ID di pengaturan atau pastikan domain Anda telah diotorisasi.`);
-                        }
-                    });
-                } catch (err) {
-                    console.error('Inisialisasi Drive gagal:', err);
-                }
-            }
-        }
-
-        setTimeout(initGoogleDrive, 1200);
-
-        const saveClientIdBtn = document.getElementById('saveClientIdBtn');
-        if (saveClientIdBtn) {
-            saveClientIdBtn.addEventListener('click', () => {
-                const inp = document.getElementById('customDriveClientId');
-                if (inp) {
-                    const val = inp.value.trim();
-                    if (val) {
-                        localStorage.setItem('gdrive_client_id', val);
-                        initGoogleDrive();
-                        alert('Client ID Google Drive berhasil disimpan! Silakan klik "Hubungkan Drive".');
-                    } else {
-                        localStorage.removeItem('gdrive_client_id');
-                        inp.value = DEFAULT_DRIVE_CLIENT_ID;
-                        initGoogleDrive();
-                        alert('Client ID direset ke default.');
-                    }
-                }
-            });
-        }
-
-        const connectDriveBtn = document.getElementById('connectDriveBtn');
-        if (connectDriveBtn) {
-            connectDriveBtn.addEventListener('click', () => {
-                if (tokenClient) {
-                    tokenClient.requestAccessToken();
-                } else {
-                    initGoogleDrive();
-                    if (tokenClient) tokenClient.requestAccessToken();
-                    else alert('Google Identity Services belum siap, mohon refresh halaman.');
-                }
-            });
-        }
-
-        const saveToDriveBtn = document.getElementById('saveToDriveBtn');
-        if (saveToDriveBtn) {
-            saveToDriveBtn.addEventListener('click', async () => {
-                if (!currentGeneratedBlob) {
-                    alert('Belum ada file audio yang dihasilkan.');
-                    return;
-                }
-                if (!gDriveAccessToken) {
-                    if (tokenClient) {
-                        tokenClient.requestAccessToken();
-                    } else {
-                        alert('Silakan hubungkan Google Drive terlebih dahulu.');
-                    }
-                    return;
-                }
-
-                saveToDriveBtn.disabled = true;
-                saveToDriveBtn.textContent = 'Menyimpan...';
-
-                try {
-                    const fileName = `Pengumuman_Stasiun_${Date.now()}.wav`;
-                    const metadata = {
-                        name: fileName,
-                        mimeType: 'audio/wav'
-                    };
-
-                    const form = new FormData();
-                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-                    form.append('file', currentGeneratedBlob);
-
-                    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${gDriveAccessToken}`
-                        },
-                        body: form
-                    });
-
-                    if (!res.ok) {
-                        if (res.status === 401) {
-                            localStorage.removeItem('gdrive_access_token');
-                            gDriveAccessToken = null;
-                            if (tokenClient) tokenClient.requestAccessToken();
-                            throw new Error('Sesi Google Drive kedaluwarsa. Silakan hubungkan kembali.');
-                        }
-                        const err = await res.text();
-                        throw new Error("Gagal mengunggah ke Google Drive: " + err);
-                    }
-
-                    alert('Berhasil menyimpan file audio ke Google Drive!');
-                    loadDriveFiles();
-                } catch (e) {
-                    alert(e.message || 'Gagal menyimpan ke Google Drive');
-                } finally {
-                    saveToDriveBtn.disabled = false;
-                    saveToDriveBtn.textContent = 'Simpan ke Drive';
-                }
-            });
-        }
-
-        async function loadDriveFiles() {
-            if (!gDriveAccessToken) return;
-            try {
-                const res = await fetch("https://www.googleapis.com/drive/v3/files?q=mimeType%3D%27audio/wav%27 and trashed%3Dfalse&fields=files(id,name,webViewLink,webContentLink,createdTime)", {
-                    headers: {
-                        'Authorization': `Bearer ${gDriveAccessToken}`
-                    }
+        // Tambah Kereta Baru
+        document.getElementById('addTrainBtn').addEventListener('click', () => {
+            const input = document.getElementById('trainNameInput');
+            const name = input.value.trim();
+            if (name) {
+                trainList.push({
+                    id: 'tr-' + Date.now(),
+                    name: name.toUpperCase().startsWith('KA ') ? name : 'KA ' + name,
+                    audios: []
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    const listContainer = document.getElementById('driveFilesList');
-                    const cont = document.getElementById('driveFilesContainer');
-                    if (cont) cont.classList.remove('hidden');
-                    if (listContainer) {
-                        if (data.files && data.files.length > 0) {
-                            listContainer.innerHTML = data.files.map(f => `
-                                <div class="flex items-center justify-between p-2 bg-slate-900/60 rounded-lg border border-slate-700/50 text-xs">
-                                    <div class="truncate max-w-[170px] pr-2">
-                                        <p class="font-medium text-slate-200 truncate">${f.name}</p>
-                                        <p class="text-[10px] text-slate-400">${new Date(f.createdTime).toLocaleString()}</p>
-                                    </div>
-                                    <div class="flex gap-1.5 shrink-0">
-                                        <a href="${f.webViewLink}" target="_blank" class="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-medium">Buka</a>
-                                        <a href="${f.webContentLink}" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded font-medium">Unduh</a>
-                                    </div>
-                                </div>
-                            `).join('');
-                        } else {
-                            listContainer.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">Belum ada file audio tersimpan di Google Drive.</p>`;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("Error loading drive files:", e);
+                input.value = '';
+                saveTrainsToStorage();
+                renderTrainCards();
             }
-        }
+        });
 
-        if (gDriveAccessToken) {
-            const st = document.getElementById('driveStatus');
-            if (st) {
-                st.textContent = 'Terhubung ke Google Drive';
-                st.className = 'text-[11px] text-green-400 font-medium';
-            }
-            const connectBtn = document.getElementById('connectDriveBtn');
-            if (connectBtn) connectBtn.textContent = 'Drive Terhubung';
-            loadDriveFiles();
-        }
+        // Event Delegation untuk Daftar Kereta
+        document.getElementById('trainList').addEventListener('click', async (e) => {
+            const target = e.target;
 
-    </script>
-
-    <!-- Firebase Auth & Firestore Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const DEFAULT_FIREBASE_CONFIG = {
-            projectId: "ancient-collector-zv9wh",
-            appId: "1:235562441762:web:299b8e2771fae035d4fe7b",
-            apiKey: "AIzaSyDCxxpeGV-WPVstuBrNr7rwb-c4kqaF150",
-            authDomain: "ancient-collector-zv9wh.firebaseapp.com",
-            firestoreDatabaseId: "ai-studio-announcerktg-d9bccc3d-1da3-4d6c-933c-eee3e6498b7c",
-            storageBucket: "ancient-collector-zv9wh.firebasestorage.app",
-            messagingSenderId: "235562441762",
-            oAuthClientId: "235562441762-83aja4rl7550uh0apadatjo5mfj64fj6.apps.googleusercontent.com"
-        };
-
-        let db, auth, currentUser = null;
-
-        async function initFirebase() {
-            try {
-                let firebaseConfig = DEFAULT_FIREBASE_CONFIG;
-                try {
-                    const cfgRes = await fetch('./firebase-applet-config.json');
-                    if (cfgRes.ok) {
-                        const parsed = await cfgRes.json();
-                        if (parsed && parsed.apiKey) firebaseConfig = parsed;
+            // Hapus Kereta
+            if (target.classList.contains('del-train-btn')) {
+                const trId = target.dataset.trainId;
+                if (confirm('Hapus kereta ini beserta pengumumannya?')) {
+                    const tr = trainList.find(t => t.id === trId);
+                    if (tr) {
+                        for (const a of tr.audios) await deleteAudioFile(a.id);
                     }
-                } catch (fetchErr) {
-                    console.info("Menggunakan konfigurasi Firebase bawaan untuk GitHub Pages.");
+                    trainList = trainList.filter(t => t.id !== trId);
+                    saveTrainsToStorage();
+                    renderTrainCards();
                 }
-
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = firebaseConfig.firestoreDatabaseId ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : getFirestore(app);
-
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    const loginBtn = document.getElementById('loginBtn');
-                    const userProfile = document.getElementById('userProfile');
-                    const userEmail = document.getElementById('userEmail');
-                    const saveCloudBtn = document.getElementById('saveToCloudBtn');
-                    const cloudStatus = document.getElementById('cloudStatus');
-
-                    if (user) {
-                        if (loginBtn) loginBtn.classList.add('hidden');
-                        if (userProfile) userProfile.classList.remove('hidden');
-                        if (userEmail) userEmail.textContent = user.email;
-                        if (saveCloudBtn) saveCloudBtn.classList.remove('hidden');
-                        if (cloudStatus) {
-                            cloudStatus.textContent = 'Terhubung (Cloud)';
-                            cloudStatus.className = 'text-[11px] text-orange-400 font-medium';
-                        }
-                        loadCloudHistory();
-                    } else {
-                        if (loginBtn) loginBtn.classList.remove('hidden');
-                        if (userProfile) userProfile.classList.add('hidden');
-                        if (saveCloudBtn) saveCloudBtn.classList.add('hidden');
-                        if (cloudStatus) {
-                            cloudStatus.textContent = 'Offline (Belum Masuk)';
-                            cloudStatus.className = 'text-[11px] text-slate-400';
-                        }
-                    }
-                });
-            } catch (e) {
-                console.warn("Firebase init warning:", e);
+                return;
             }
-        }
 
-        setTimeout(initFirebase, 200);
-
-        const loginBtn = document.getElementById('loginBtn');
-        if (loginBtn) {
-            loginBtn.addEventListener('click', async () => {
-                if (!auth) {
-                    await initFirebase();
+            // Hapus Audio Kereta
+            if (target.classList.contains('del-train-audio-btn')) {
+                const trId = target.dataset.trainId;
+                const aId = target.dataset.audioId;
+                await deleteAudioFile(aId);
+                const tr = trainList.find(t => t.id === trId);
+                if (tr) {
+                    tr.audios = tr.audios.filter(a => a.id !== aId);
+                    saveTrainsToStorage();
+                    renderTrainCards();
                 }
-                if (!auth) {
-                    alert('Firebase belum siap. Silakan periksa koneksi internet Anda.');
+                return;
+            }
+
+            // Putar Audio Kereta
+            if (target.classList.contains('play-train-audio-btn')) {
+                const trId = target.dataset.trainId;
+                const aId = target.dataset.audioId;
+                const blob = await getAudioFile(aId);
+                if (!blob) {
+                    alert('File audio tidak ditemukan di memori browser.');
                     return;
                 }
-                try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
-                } catch (e) {
-                    console.error("Login error:", e);
-                    if (e.code === 'auth/unauthorized-domain') {
-                        alert(`Domain "${window.location.hostname}" belum didaftarkan di Firebase Authentication.\n\n📌 Catatan Penting:\nSeluruh fitur Announcer Stasiun, Play TTS Bel, Download MP3 & WAV dapat digunakan 100% langsung tanpa harus login!\n\nJika ingin mengaktifkan sinkronisasi Cloud akun:\n1. Buka Firebase Console (project: ancient-collector-zv9wh)\n2. Masuk ke Authentication > Settings > Authorized domains\n3. Klik "Add domain" lalu masukkan: ${window.location.hostname}`);
-                    } else if (e.code === 'auth/popup-closed-by-user') {
-                        console.log('Login popup ditutup oleh pengguna.');
-                    } else {
-                        alert('Gagal Masuk: ' + (e.message || e.code));
-                    }
-                }
-            });
-        }
+                stopAllAudio();
+                setPlayingState(true, 'Membunyikan Bel...');
 
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                if (auth) await signOut(auth);
-            });
-        }
+                const withChime = document.getElementById('enableChime').checked;
+                if (withChime) await playDingDong();
 
-        const saveToCloudBtn = document.getElementById('saveToCloudBtn');
-        if (saveToCloudBtn) {
-            saveToCloudBtn.addEventListener('click', async () => {
-                if (!currentUser || !db) {
-                    alert('Silakan buat akun / masuk terlebih dahulu.');
-                    return;
-                }
-                const ttsText = document.getElementById('ttsText');
-                const textVal = ttsText ? ttsText.value : '';
-                if (!textVal) {
-                    alert('Tidak ada teks untuk disimpan.');
-                    return;
-                }
-                saveToCloudBtn.disabled = true;
-                saveToCloudBtn.textContent = 'Menyimpan ke Cloud...';
+                if (!isPlaying) return;
 
-                try {
-                    await addDoc(collection(db, 'audio_history'), {
-                        uid: currentUser.uid,
-                        email: currentUser.email,
-                        text: textVal.substring(0, 200),
-                        createdAt: new Date().toISOString()
-                    });
-                    alert('Berhasil menyimpan riwayat pengumuman ke Cloud Firestore!');
-                    loadCloudHistory();
-                } catch (e) {
-                    alert('Gagal menyimpan ke Cloud: ' + e.message);
-                } finally {
-                    saveToCloudBtn.disabled = false;
-                    saveToCloudBtn.textContent = 'Simpan Riwayat ke Cloud';
-                }
-            });
-        }
+                setPlayingState(true, 'Memutar Audio...');
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                currentAudio = audio;
 
-        async function loadCloudHistory() {
-            if (!currentUser || !db) return;
-            try {
-                const q = query(collection(db, 'audio_history'), where('uid', '==', currentUser.uid));
-                const querySnapshot = await getDocs(q);
-                const listContainer = document.getElementById('cloudHistoryList');
-                const cont = document.getElementById('cloudHistoryContainer');
-                if (cont) cont.classList.remove('hidden');
-                if (listContainer) {
-                    const docs = [];
-                    querySnapshot.forEach((docSnap) => {
-                        docs.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    if (docs.length > 0) {
-                        listContainer.innerHTML = docs.map(d => `
-                            <div class="flex items-center justify-between p-2 bg-slate-900/60 rounded-lg border border-slate-700/50 text-xs">
-                                <div class="truncate max-w-[180px] pr-2">
-                                    <p class="font-medium text-slate-200 truncate">${d.text}</p>
-                                    <p class="text-[10px] text-slate-400">${new Date(d.createdAt).toLocaleString()}</p>
-                                </div>
-                                <span class="px-2 py-0.5 bg-orange-500/20 text-orange-300 rounded text-[10px] font-semibold">Tersimpan</span>
-                            </div>
-                        `).join('');
-                    } else {
-                        listContainer.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">Belum ada riwayat tersimpan di cloud.</p>`;
-                    }
-                }
-            } catch (e) {
-                console.error("Error loading cloud history:", e);
+                audio.onended = () => {
+                    setPlayingState(false);
+                    URL.revokeObjectURL(url);
+                };
+                audio.onerror = () => {
+                    setPlayingState(false);
+                    URL.revokeObjectURL(url);
+                };
+                audio.play();
+                return;
             }
-        }
+
+            // Simpan Audio Kereta
+            if (target.classList.contains('save-audio-btn')) {
+                const trId = target.dataset.trainId;
+                const card = target.closest('.space-y-3');
+                const nameInp = card.querySelector('.audio-name-input');
+                const fileInp = card.querySelector('.audio-file-input');
+                const audioName = nameInp.value.trim();
+                const file = fileInp.files[0];
+
+                if (!audioName || !file) {
+                    alert('Harap ketik nama suara dan pilih file audio terlebih dahulu.');
+                    return;
+                }
+
+                target.disabled = true;
+                target.textContent = '⏳ Menyimpan...';
+
+                const audioId = 'aud-' + Date.now();
+                await saveAudioFile(audioId, file);
+
+                const tr = trainList.find(t => t.id === trId);
+                if (tr) {
+                    tr.audios.push({ id: audioId, name: audioName });
+                    saveTrainsToStorage();
+                    renderTrainCards();
+                }
+            }
+        });
+
+        // Tampilkan nama file saat dipilih
+        document.getElementById('trainList').addEventListener('change', (e) => {
+            if (e.target.classList.contains('audio-file-input')) {
+                const file = e.target.files[0];
+                if (file) {
+                    const label = e.target.closest('label').querySelector('span');
+                    label.textContent = file.name.substring(0, 12) + '...';
+                }
+            }
+        });
+
+        // Mulai aplikasi
+        loadTrains();
     </script>
 </body>
 </html>
