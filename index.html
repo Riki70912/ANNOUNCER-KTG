@@ -462,7 +462,6 @@
                     currentAudio = audio;
                     audio.onended = () => resolve();
                     audio.onerror = () => {
-                        // Fallback ke browser speech jika url terhalang
                         if ('speechSynthesis' in window) {
                             const utt = new SpeechSynthesisUtterance(clean);
                             utt.lang = 'id-ID';
@@ -650,7 +649,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-3";
                 
-                let audiosHtml = t.audios.map((a, idx) => `
+                let audiosHtml = t.audios.map((a) => `
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg text-xs">
                         <span class="font-medium text-slate-200 truncate pr-2">🎵 ${a.name}</span>
                         <div class="flex gap-1.5 shrink-0">
