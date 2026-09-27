@@ -709,62 +709,129 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
                     if (audioUrl) return audioUrl;
                 }
             } catch (e) {
-                console.warn("Server TTS proxy not available (static host / GitHub Pages), trying client-side API key...");
+                console.warn("Server TTS proxy not available (e.g. GitHub Pages static host), checking Gemini API Key or client audio...");
             }
 
-            // 2. If server proxy failed (e.g. on GitHub Pages static host), check for API key
+            // 2. If server proxy failed (e.g. on GitHub Pages static host), check for user-configured API key
             let apiKey = localStorage.getItem('gemini_api_key');
             if (!apiKey) {
-                return null; // Return null to automatically fallback to browser speech synthesis without prompting
+                return null; // Return null to smoothly use client-side Indonesian audio
             }
 
-            // 3. Call Gemini API from client (Direct or via CORS Proxy for GitHub Pages)
-            const payload = {
-                contents: [{ parts: [{ text: text }] }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: voiceName || "Sulafat" }
+            // 3. Call Gemini API from client directly (Google Generative Language API supports CORS)
+            try {
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                {
+                                    text: text,
+                                    speechMetadata: {
+                                        style: "Pengumuman stasiun kereta api yang jelas, ramah, dan artikulatif"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName || "Sulafat" }
+                            }
                         }
                     }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite-tts:generateContent?key=${apiKey}`;
+                const clientResponse = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (clientResponse.ok) {
+                    const resultData = await clientResponse.json();
+                    const audioUrl = parseAudioFromResponse(resultData);
+                    if (audioUrl) return audioUrl;
+                } else {
+                    console.warn("Direct client Gemini TTS returned status:", clientResponse.status);
                 }
-            };
+            } catch (clientErr) {
+                console.warn("Direct client Gemini API error:", clientErr);
+            }
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${apiKey}`;
-            
-            let clientResponse = null;
-            try {
-                // Try direct fetch first
-                clientResponse = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+            return null;
+        }
+
+        function splitTextIntoTtsChunks(text) {
+            const sentences = text.match(/[^.!?\n,;:]+[.!?\n,;:]*/g) || [text];
+            const chunks = [];
+            for (const s of sentences) {
+                let clean = s.trim();
+                while (clean.length > 140) {
+                    let sliceIdx = clean.lastIndexOf(' ', 140);
+                    if (sliceIdx <= 0) sliceIdx = 140;
+                    chunks.push(clean.substring(0, sliceIdx).trim());
+                    clean = clean.substring(sliceIdx).trim();
+                }
+                if (clean) chunks.push(clean);
+            }
+            return chunks.length > 0 ? chunks : [text];
+        }
+
+        async function playIndonesianTtsClientSide(text, voiceKey) {
+            const chunks = splitTextIntoTtsChunks(text);
+            const profile = VOICE_PROFILES[voiceKey] || VOICE_PROFILES['Sulafat'];
+            const userSpeed = parseFloat(tempSlider ? tempSlider.value : 1.0);
+            const targetRate = Math.max(0.75, Math.min(1.35, userSpeed * (profile.rate || 1.0)));
+
+            if (downloadTtsBtn) {
+                const sampleChunk = chunks[0] || text.substring(0, 140);
+                const directUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(sampleChunk)}`;
+                downloadTtsBtn.href = directUrl;
+                downloadTtsBtn.download = `Pengumuman_Stasiun_${Date.now()}.mp3`;
+                downloadTtsBtn.target = '_blank';
+                if (ttsDownloadOptions) ttsDownloadOptions.classList.remove('hidden');
+            }
+
+            for (let i = 0; i < chunks.length; i++) {
+                if (!isTtsPlaying) break;
+                const chunk = chunks[i];
+                if (!chunk) continue;
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+                
+                await new Promise((resolve) => {
+                    const audio = new Audio(url);
+                    audio.playbackRate = targetRate;
+                    currentPlayingAudio = audio;
+
+                    // Preload next chunk for gapless natural flow
+                    if (i + 1 < chunks.length) {
+                        const nextUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q=${encodeURIComponent(chunks[i + 1])}`;
+                        const preloader = new Audio(nextUrl);
+                        preloader.preload = 'auto';
+                    }
+
+                    audio.onended = () => {
+                        currentPlayingAudio = null;
+                        resolve();
+                    };
+                    audio.onerror = (e) => {
+                        console.warn("Direct audio playback failed for chunk, falling back to speech synthesis:", e);
+                        playSpeechSynthesisUtterance(chunk, voiceKey).then(resolve).catch(resolve);
+                    };
+
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch((err) => {
+                            console.warn("Direct audio play error:", err);
+                            playSpeechSynthesisUtterance(chunk, voiceKey).then(resolve).catch(resolve);
+                        });
+                    }
                 });
-            } catch (directErr) {
-                console.warn("Direct fetch blocked by CORS (expected on GitHub Pages), trying CORS proxy...");
             }
-
-            // If direct fetch failed or wasn't ok, try via CORS proxy
-            if (!clientResponse || !clientResponse.ok) {
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(apiUrl);
-                clientResponse = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            }
-
-            if (!clientResponse.ok) {
-                const errText = await clientResponse.text();
-                throw new Error("Client Gemini TTS failed: " + errText);
-            }
-
-            const resultData = await clientResponse.json();
-            const audioUrl = parseAudioFromResponse(resultData);
-            if (audioUrl) return audioUrl;
-
-            throw new Error('Format audio tidak valid dari respons API');
         }
 
         let isTtsPlaying = false;
@@ -805,63 +872,74 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
             
             const audio = new Audio();
             audio.src = audioUrl;
-            audio.crossOrigin = "anonymous";
+            const isLocalOrBlob = audioUrl.startsWith('blob:') || audioUrl.startsWith('/') || audioUrl.startsWith(window.location.origin);
+            if (isLocalOrBlob) {
+                audio.crossOrigin = "anonymous";
+            }
             audio.playbackRate = Math.max(0.7, Math.min(1.4, userSpeed * profile.rate));
             currentPlayingAudio = audio;
 
-            try {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (!ttsAudioContext || ttsAudioContext.state === 'closed') {
-                    ttsAudioContext = new AudioContextClass();
+            if (isLocalOrBlob) {
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!ttsAudioContext || ttsAudioContext.state === 'closed') {
+                        ttsAudioContext = new AudioContextClass();
+                    }
+                    if (ttsAudioContext.state === 'suspended') {
+                        await ttsAudioContext.resume();
+                    }
+
+                    const source = ttsAudioContext.createMediaElementSource(audio);
+                    const lowFilter = ttsAudioContext.createBiquadFilter();
+                    const highFilter = ttsAudioContext.createBiquadFilter();
+
+                    if (profile.gender === 'male') {
+                        // Deep male voice boost (boost 220Hz bass, soften high trebles)
+                        lowFilter.type = 'lowshelf';
+                        lowFilter.frequency.value = 220;
+                        lowFilter.gain.value = voiceKey === 'Charon' ? 8.0 : 4.5;
+
+                        highFilter.type = 'highshelf';
+                        highFilter.frequency.value = 3200;
+                        highFilter.gain.value = voiceKey === 'Charon' ? -4.0 : -1.0;
+                    } else if (voiceKey === 'Zephyr') {
+                        // Bright, clear high female tone
+                        lowFilter.type = 'highpass';
+                        lowFilter.frequency.value = 140;
+                        highFilter.type = 'highshelf';
+                        highFilter.frequency.value = 3200;
+                        highFilter.gain.value = 5.0;
+                    } else if (voiceKey === 'Aoede') {
+                        // Formal, dignified female tone
+                        lowFilter.type = 'peaking';
+                        lowFilter.frequency.value = 650;
+                        lowFilter.gain.value = 3.5;
+                        highFilter.type = 'highshelf';
+                        highFilter.frequency.value = 4000;
+                        highFilter.gain.value = -1.5;
+                    } else {
+                        lowFilter.type = 'allpass';
+                        highFilter.type = 'allpass';
+                    }
+
+                    source.connect(lowFilter);
+                    lowFilter.connect(highFilter);
+                    highFilter.connect(ttsAudioContext.destination);
+                } catch (webAudioErr) {
+                    console.warn("WebAudio filter not applied:", webAudioErr);
                 }
-                if (ttsAudioContext.state === 'suspended') {
-                    await ttsAudioContext.resume();
-                }
-
-                const source = ttsAudioContext.createMediaElementSource(audio);
-                const lowFilter = ttsAudioContext.createBiquadFilter();
-                const highFilter = ttsAudioContext.createBiquadFilter();
-
-                if (profile.gender === 'male') {
-                    // Deep male voice boost (boost 220Hz bass, soften high trebles)
-                    lowFilter.type = 'lowshelf';
-                    lowFilter.frequency.value = 220;
-                    lowFilter.gain.value = voiceKey === 'Charon' ? 8.0 : 4.5;
-
-                    highFilter.type = 'highshelf';
-                    highFilter.frequency.value = 3200;
-                    highFilter.gain.value = voiceKey === 'Charon' ? -4.0 : -1.0;
-                } else if (voiceKey === 'Zephyr') {
-                    // Bright, clear high female tone
-                    lowFilter.type = 'highpass';
-                    lowFilter.frequency.value = 140;
-                    highFilter.type = 'highshelf';
-                    highFilter.frequency.value = 3200;
-                    highFilter.gain.value = 5.0;
-                } else if (voiceKey === 'Aoede') {
-                    // Formal, dignified female tone
-                    lowFilter.type = 'peaking';
-                    lowFilter.frequency.value = 650;
-                    lowFilter.gain.value = 3.5;
-                    highFilter.type = 'highshelf';
-                    highFilter.frequency.value = 4000;
-                    highFilter.gain.value = -1.5;
-                } else {
-                    lowFilter.type = 'allpass';
-                    highFilter.type = 'allpass';
-                }
-
-                source.connect(lowFilter);
-                lowFilter.connect(highFilter);
-                highFilter.connect(ttsAudioContext.destination);
-            } catch (webAudioErr) {
-                // AudioContext fallback
             }
 
             await new Promise((resolve, reject) => {
-                audio.onended = resolve;
+                audio.onended = () => {
+                    currentPlayingAudio = null;
+                    resolve();
+                };
                 audio.onerror = reject;
-                audio.play().catch(reject);
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(reject);
+                }
             });
         }
 
@@ -969,10 +1047,17 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                 let audioUrl = null;
                 const chosenVoice = voiceSelect ? voiceSelect.value : 'Sulafat';
+
+                // If user selected a specific system/browser voice
+                if (chosenVoice.startsWith('sys:')) {
+                    await playSpeechSynthesisUtterance(text, chosenVoice);
+                    return;
+                }
+
                 try {
                     audioUrl = await fetchGeminiTTS(text, chosenVoice);
                 } catch (apiErr) {
-                    console.warn("Gemini API TTS failed, falling back to Browser SpeechSynthesis:", apiErr);
+                    console.warn("TTS fetch returned error:", apiErr);
                 }
 
                 if (audioUrl) {
@@ -996,8 +1081,10 @@ Attention please. To all Mutiara Timur train passengers, we invite you to enter 
 
                     await playAnnouncerAudio(audioUrl, chosenVoice);
                 } else {
-                    // Fallback to browser native SpeechSynthesis with exact profile (gender, pitch, tempo)
-                    await playSpeechSynthesisUtterance(text, chosenVoice);
+                    // Running on GitHub Pages or static web without server:
+                    // Play natural Indonesian speech audio directly client-side so it is identical to AI Studio preview!
+                    console.log("Playing natural Indonesian audio client-side (GitHub Pages mode)...");
+                    await playIndonesianTtsClientSide(text, chosenVoice);
                 }
 
             } catch (error) {

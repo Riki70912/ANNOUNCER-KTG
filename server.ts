@@ -53,7 +53,19 @@ app.post("/api/tts", async (req, res) => {
     if (apiKey) {
       try {
         const payload = {
-          contents: [{ parts: [{ text: text }] }],
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: text,
+                  speechMetadata: {
+                    style: "Pengumuman stasiun kereta api yang jelas, ramah, dan artikulatif"
+                  }
+                }
+              ]
+            }
+          ],
           generationConfig: {
             responseModalities: ["AUDIO"],
             speechConfig: {
@@ -64,7 +76,7 @@ app.post("/api/tts", async (req, res) => {
           }
         };
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite-tts:generateContent?key=${apiKey}`;
         const response = await fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
